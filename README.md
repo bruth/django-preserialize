@@ -135,7 +135,7 @@ group_template = {
 # User, so we can add the 'merge' option. Remember this simply
 # gets ignored if 'UserProfile' is the top-level object being
 # serialized.
-user_profile_template = {
+profile_template = {
     'merge': True
 }
 
