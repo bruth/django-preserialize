@@ -7,6 +7,14 @@ The result will be simply `dict`s and `list`s.
 
 _Have a better name? Give me a suggestion!_
 
+## Install
+
+```bash
+pip install django-preserialize
+```
+
+## Docs
+
 A serialized user object might look like this:
 
 ```python
