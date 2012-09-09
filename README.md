@@ -152,7 +152,7 @@ user_template = {
 # Everyone is the pool!
 users = User.objects.all()
 # Now we can use Python's wonderful argument _unpacking_ syntax. Clean.
-preserialize.serialize(users, **user_template)
+serialize(users, **user_template)
 ```
 
 ## Niceties
