@@ -153,6 +153,7 @@ user_template = {
 users = User.objects.all()
 # Now we can use Python's wonderful argument _unpacking_ syntax. Clean.
 preserialize.serialize(users, **user_template)
+```
 
 ## Niceties
 
