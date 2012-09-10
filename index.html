@@ -33,9 +33,9 @@
 <p>django-preserialize is a one-stop shop for ensuring an object is free of
 <code>Model</code> and <code>QuerySet</code> instances. By default, all non-relational fields
 will be included as well as the primary keys of local related fields.
-The result will be simply <code>dict</code>s and <code>list</code>s.</p>
+The resulting containers will simply be <code>dict</code>s and <code>list</code>s.</p>
 
-<p><em>Have a better name? Give me a suggestion!</em></p>
+<p><em>BTW, have a better name? Give me a suggestion!</em></p>
 
 <h2>Install</h2>
 
@@ -68,10 +68,10 @@ The result will be simply <code>dict</code>s and <code>list</code>s.</p>
 <p>This can then be passed off to a serializer/encoder, e.g. JSON, to turn
 it into a string for the response body (or whatever else you want to do).</p>
 
-<h2>Options</h2>
+<h2>Serialize Options</h2>
 
-<p>Some fields may not be appropriate or relevent to include in the
-response. To customize which fields get included or excluded, the
+<p>Some fields may not be appropriate or relevent to include as output.
+To customize which fields get included or excluded, the
 following arguments can be passed to <code>serialize</code>:</p>
 
 <ul>
@@ -134,7 +134,7 @@ this content, namely JavaScript. Default is <code>False</code>.</li>
 
 <h2>Related Objects</h2>
 
-<p>Composite resources are common when dealing with data with tight
+<p>Composite resources are common when dealing with data that have <em>tight</em>
 relationships. A user and their user profile is an example of this. It is 
 inefficient for a client to have to make two separate requests for data 
 that is typically always consumed together.</p>
@@ -205,9 +205,8 @@ objects. Deconstructing the above example, we have:</p>
 <h3>Mixed Types</h3>
 
 <p>It is not always the case that a single model instance or queryset is the
-source of data for a resource. <code>preserialize.serialize</code> also understands
-<code>dict</code>s and any iterable of <code>dict</code>s. They will be treated similarly to the
-model instances.</p>
+source of data for a resource. <code>serialize</code> also understands <code>dict</code>s and any
+iterable of <code>dict</code>s. They will be treated similarly to the model instances.</p>
 
 <h3>Pseudo-selectors</h3>
 
