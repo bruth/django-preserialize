@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Django Preserialize by bruth</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Django Preserialize</h1>
+        <h2>Convert your model instances and querysets into dicts and list with style.</h2>
+        <a href="https://github.com/bruth/django-preserialize" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>django-preserialize</h1>
+
+<p>django-preserialize is a one-stop shop for ensuring an object is free of
+<code>Model</code> and <code>QuerySet</code> instances. By default, all non-relational fields
+will be included as well as the primary keys of local related fields.
+The result will be simply <code>dict</code>s and <code>list</code>s.</p>
+
+<p><em>Have a better name? Give me a suggestion!</em></p>
+
+<h2>Install</h2>
+
+<div class="highlight"><pre>pip install django-preserialize
+</pre></div>
+
+<h2>Docs</h2>
+
+<p>A serialized user object might look like this:</p>
+
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">preserialize.serialize</span> <span class="kn">import</span> <span class="n">serialize</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">serialize</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="s">'date_joined'</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2009</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span>
+    <span class="s">'email'</span><span class="p">:</span> <span class="s">u'jon@doe.com'</span><span class="p">,</span>
+    <span class="s">'first_name'</span><span class="p">:</span> <span class="s">u'Jon'</span><span class="p">,</span>
+    <span class="s">'groups'</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+    <span class="s">'id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'is_active'</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+    <span class="s">'is_staff'</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+    <span class="s">'is_superuser'</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+    <span class="s">'last_login'</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2012</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">41</span><span class="p">,</span> <span class="mi">927637</span><span class="p">),</span>
+    <span class="s">'last_name'</span><span class="p">:</span> <span class="s">u'Doe'</span><span class="p">,</span>
+    <span class="s">'password'</span><span class="p">:</span> <span class="s">u'!'</span><span class="p">,</span>
+    <span class="s">'user_permissions'</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+    <span class="s">'username'</span><span class="p">:</span> <span class="s">u'jdoe'</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>This can then be passed off to a serializer/encoder, e.g. JSON, to turn
+it into a string for the response body (or whatever else you want to do).</p>
+
+<h2>Options</h2>
+
+<p>Some fields may not be appropriate or relevent to include in the
+response. To customize which fields get included or excluded, the
+following arguments can be passed to <code>serialize</code>:</p>
+
+<ul>
+<li>
+<code>fields</code> - A list of fields names to include. Method names can also be
+specified that will be called when being serialized. Default is all local 
+fields and local related fields. See also: <code>exclude</code>, <code>key_map</code>
+</li>
+<li>
+<code>exclude</code> - A list of fields names to exclude (this takes precedence
+over fields). Default is <code>None</code>. See also: <code>fields</code>, <code>key_map</code>
+</li>
+<li>
+<code>related</code> - A dict of related object accessor and configs (see below) for
+handling related object.</li>
+<li>
+<code>values_list</code> - This option only applies to <code>QuerySet</code>s. Returns a list of
+lists with the field values (like Django's <code>ValuesListQuerySet</code>). Default 
+is <code>False</code>.</li>
+<li>
+<code>flatten</code> - Applies only if <code>values_list</code> is <code>True</code> and one field is 
+specified. If <code>True</code>, flattens out the list of lists into a single list of 
+values. Default is <code>True</code>.</li>
+<li>
+<code>key_prefix</code> - A string to be use to prefix the dict keys. To enable 
+dynamic prefixes, the prefix may contain <code>'%(accessor)s' which will be the 
+class name for top-level objects or the accessor name for related objects. 
+Default is</code>None`.</li>
+<li>
+<code>key_map</code> - A dictionary that maps the keys of the output dictionary to 
+the actual field/method names referencing the data. Default is <code>None</code>.  See 
+also: <code>fields</code>
+</li>
+<li>
+<code>camelcase</code> - Converts all keys to a camel-case equivalent. This is 
+merely a convenience for conforming to language convention for consumers of 
+this content, namely JavaScript. Default is <code>False</code>.</li>
+</ul><h3>Examples</h3>
+
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">serialize</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">'username'</span><span class="p">,</span> <span class="s">'full_name'</span><span class="p">],</span> <span class="n">key_map</span><span class="o">=</span><span class="p">{</span><span class="s">'full_name'</span><span class="p">:</span> <span class="s">'get_full_name'</span><span class="p">},</span> <span class="n">camelcase</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="s">'fullName'</span><span class="p">:</span> <span class="s">u'Jon Doe'</span><span class="p">,</span>
+    <span class="s">'username'</span><span class="p">:</span> <span class="s">u'jdoe'</span>
+<span class="p">}</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">serialize</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s">'password'</span><span class="p">,</span> <span class="s">'groups'</span><span class="p">,</span> <span class="s">'permissions'</span><span class="p">])</span>
+<span class="p">{</span>
+    <span class="s">'date_joined'</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2009</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span>
+    <span class="s">'email'</span><span class="p">:</span> <span class="s">u'jon@doe.com'</span><span class="p">,</span>
+    <span class="s">'first_name'</span><span class="p">:</span> <span class="s">u'Jon'</span><span class="p">,</span>
+    <span class="s">'id'</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s">'is_active'</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+    <span class="s">'is_staff'</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+    <span class="s">'is_superuser'</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+    <span class="s">'last_login'</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2012</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">41</span><span class="p">,</span> <span class="mi">927637</span><span class="p">),</span>
+    <span class="s">'last_name'</span><span class="p">:</span> <span class="s">u'Doe'</span><span class="p">,</span>
+    <span class="s">'username'</span><span class="p">:</span> <span class="s">u'jdoe'</span>
+<span class="p">}</span>
+</pre></div>
+
+<h2>Related Objects</h2>
+
+<p>Composite resources are common when dealing with data with tight
+relationships. A user and their user profile is an example of this. It is 
+inefficient for a client to have to make two separate requests for data 
+that is typically always consumed together.</p>
+
+<p><code>serialize</code> supports the <code>related</code> keyword argument for defining options for
+relational fields. The following additional attributes (to the above) may be
+defined:</p>
+
+<ul>
+<li>
+<code>merge</code> - This option only applies to local <code>ForeignKey</code> or 
+<code>OneToOneField</code>. This allows for merging this object's fields into the 
+parent object.</li>
+</ul><div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">serialize</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">related</span><span class="o">=</span><span class="p">{</span><span class="s">'groups'</span><span class="p">:</span> <span class="p">{</span><span class="s">'fields'</span><span class="p">:</span> <span class="p">[</span><span class="s">'name'</span><span class="p">]},</span> <span class="s">'profile'</span><span class="p">:</span> <span class="p">{</span><span class="s">'merge'</span><span class="p">:</span> <span class="bp">True</span><span class="p">}})</span>
+<span class="p">{</span>
+    <span class="s">'username'</span><span class="p">:</span> <span class="s">u'jdoe'</span><span class="p">,</span>
+    <span class="s">'groups'</span><span class="p">:</span> <span class="p">[{</span>
+        <span class="s">'name'</span><span class="p">:</span> <span class="s">u'Managers'</span>
+    <span class="p">}]</span>
+    <span class="c"># profile attributes merged into the user</span>
+    <span class="s">'twitter'</span><span class="p">:</span> <span class="s">'@jdoe'</span><span class="p">,</span>
+    <span class="s">'mobile'</span><span class="p">:</span> <span class="s">'123-456-7890'</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+
+<h2>Conventions</h2>
+
+<p><strong>Define a <code>data_template</code> dict for each model that will be serialized.</strong></p>
+
+<p>Defining a <code>data_template</code> enables reuse across different serialized
+objects. Deconstructing the above example, we have:</p>
+
+<div class="highlight"><pre><span class="c"># Render a list of group names.. note that 'values_list'</span>
+<span class="c"># options is implied here since there is only one field</span>
+<span class="c"># specified. It is here to be explicit.</span>
+<span class="n">group_template</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'fields'</span><span class="p">:</span> <span class="p">[</span><span class="s">'name'</span><span class="p">],</span>
+    <span class="s">'values_list'</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c"># User profiles are typically only wanted to be merge into</span>
+<span class="c"># User, so we can add the 'merge' option. Remember this simply</span>
+<span class="c"># gets ignored if 'UserProfile' is the top-level object being</span>
+<span class="c"># serialized.</span>
+<span class="n">profile_template</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'merge'</span><span class="p">:</span> <span class="bp">True</span>
+<span class="p">}</span>
+
+<span class="c"># Users typically always include some related data (groups and their</span>
+<span class="c"># profile), so we can reference the above templates in this one.</span>
+<span class="n">user_template</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'exclude'</span><span class="p">:</span> <span class="p">[</span><span class="s">'password'</span><span class="p">,</span> <span class="s">'user_permissions'</span><span class="p">],</span>
+    <span class="s">'related'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">'groups'</span><span class="p">:</span> <span class="n">group_template</span><span class="p">,</span>
+        <span class="s">'profile'</span><span class="p">:</span> <span class="n">profile_template</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c"># Everyone is the pool!</span>
+<span class="n">users</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="c"># Now we can use Python's wonderful argument _unpacking_ syntax. Clean.</span>
+<span class="n">serialize</span><span class="p">(</span><span class="n">users</span><span class="p">,</span> <span class="o">**</span><span class="n">user_template</span><span class="p">)</span>
+</pre></div>
+
+<h2>Niceties</h2>
+
+<h3>Mixed Types</h3>
+
+<p>It is not always the case that a single model instance or queryset is the
+source of data for a resource. <code>preserialize.serialize</code> also understands
+<code>dict</code>s and any iterable of <code>dict</code>s. They will be treated similarly to the
+model instances.</p>
+
+<h3>Pseudo-selectors</h3>
+
+<p>The <code>fields</code> and <code>exclude</code> options understands four <em>pseudo-selectors</em> which
+can be used in place of typing out all of a model's field names (although
+being explicit is always better).</p>
+
+<ul>
+<li>
+<code>:pk</code> - the primary key field of the model</li>
+<li>
+<code>:local</code> - all local fields on a model (including local foreign keys and
+many-to-many fields)</li>
+<li>
+<code>:related</code> - all related fields (reverse foreign key and many-to-many)</li>
+<li>
+<code>:all</code> - a composite of all selectors above and thus any an all fields
+on or related to a model</li>
+</ul><p>You can use them like this:</p>
+
+<div class="highlight"><pre><span class="c"># The two selectors here are actually the default, but defined</span>
+<span class="c"># for the example.</span>
+<span class="n">serialize</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">':pk'</span><span class="p">,</span> <span class="s">':local'</span><span class="p">],</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s">'password'</span><span class="p">])</span>
+</pre></div>
+
+<p>For those curious, try this:</p>
+
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">preserialize.utils</span> <span class="kn">import</span> <span class="n">resolver</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">pprint</span><span class="p">(</span><span class="n">resolver</span><span class="o">.</span><span class="n">_get_fields</span><span class="p">(</span><span class="n">User</span><span class="p">))</span>
+<span class="p">{</span><span class="s">':all'</span><span class="p">:</span> <span class="p">{</span><span class="s">'date_joined'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">:</span> <span class="n">date_joined</span><span class="o">&gt;</span><span class="p">,</span>
+          <span class="s">'email'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">EmailField</span><span class="p">:</span> <span class="n">email</span><span class="o">&gt;</span><span class="p">,</span>
+          <span class="s">'first_name'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">CharField</span><span class="p">:</span> <span class="n">first_name</span><span class="o">&gt;</span><span class="p">,</span>
+          <span class="s">'groups'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">related</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">:</span> <span class="n">groups</span><span class="o">&gt;</span><span class="p">,</span>
+          <span class="s">'id'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">AutoField</span><span class="p">:</span> <span class="nb">id</span><span class="o">&gt;</span><span class="p">,</span>
+          <span class="s">'is_active'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">:</span> <span class="n">is_active</span><span class="o">&gt;</span><span class="p">,</span>
+          <span class="s">'is_staff'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">:</span> <span class="n">is_staff</span><span class="o">&gt;</span><span class="p">,</span>
+          <span class="s">'is_superuser'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">:</span> <span class="n">is_superuser</span><span class="o">&gt;</span><span class="p">,</span>
+          <span class="s">'last_login'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">:</span> <span class="n">last_login</span><span class="o">&gt;</span><span class="p">,</span>
+          <span class="s">'last_name'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">CharField</span><span class="p">:</span> <span class="n">last_name</span><span class="o">&gt;</span><span class="p">,</span>
+          <span class="s">'logentry_set'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">RelatedObject</span><span class="p">:</span> <span class="n">admin</span><span class="p">:</span><span class="n">logentry</span> <span class="n">related</span> <span class="n">to</span> <span class="n">user</span><span class="o">&gt;</span><span class="p">,</span>
+          <span class="s">'password'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">CharField</span><span class="p">:</span> <span class="n">password</span><span class="o">&gt;</span><span class="p">,</span>
+          <span class="s">'user_permissions'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">related</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">:</span> <span class="n">user_permissions</span><span class="o">&gt;</span><span class="p">,</span>
+          <span class="s">'username'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">CharField</span><span class="p">:</span> <span class="n">username</span><span class="o">&gt;</span><span class="p">},</span>
+ <span class="s">':local'</span><span class="p">:</span> <span class="p">{</span><span class="s">'date_joined'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">:</span> <span class="n">date_joined</span><span class="o">&gt;</span><span class="p">,</span>
+            <span class="s">'email'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">EmailField</span><span class="p">:</span> <span class="n">email</span><span class="o">&gt;</span><span class="p">,</span>
+            <span class="s">'first_name'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">CharField</span><span class="p">:</span> <span class="n">first_name</span><span class="o">&gt;</span><span class="p">,</span>
+            <span class="s">'groups'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">related</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">:</span> <span class="n">groups</span><span class="o">&gt;</span><span class="p">,</span>
+            <span class="s">'id'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">AutoField</span><span class="p">:</span> <span class="nb">id</span><span class="o">&gt;</span><span class="p">,</span>
+            <span class="s">'is_active'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">:</span> <span class="n">is_active</span><span class="o">&gt;</span><span class="p">,</span>
+            <span class="s">'is_staff'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">:</span> <span class="n">is_staff</span><span class="o">&gt;</span><span class="p">,</span>
+            <span class="s">'is_superuser'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">:</span> <span class="n">is_superuser</span><span class="o">&gt;</span><span class="p">,</span>
+            <span class="s">'last_login'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">:</span> <span class="n">last_login</span><span class="o">&gt;</span><span class="p">,</span>
+            <span class="s">'last_name'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">CharField</span><span class="p">:</span> <span class="n">last_name</span><span class="o">&gt;</span><span class="p">,</span>
+            <span class="s">'password'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">CharField</span><span class="p">:</span> <span class="n">password</span><span class="o">&gt;</span><span class="p">,</span>
+            <span class="s">'user_permissions'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">related</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">:</span> <span class="n">user_permissions</span><span class="o">&gt;</span><span class="p">,</span>
+            <span class="s">'username'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">CharField</span><span class="p">:</span> <span class="n">username</span><span class="o">&gt;</span><span class="p">},</span>
+ <span class="s">':pk'</span><span class="p">:</span> <span class="p">{</span><span class="s">'id'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">AutoField</span><span class="p">:</span> <span class="nb">id</span><span class="o">&gt;</span><span class="p">},</span>
+ <span class="s">':related'</span><span class="p">:</span> <span class="p">{</span><span class="s">'logentry_set'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">RelatedObject</span><span class="p">:</span> <span class="n">admin</span><span class="p">:</span><span class="n">logentry</span> <span class="n">related</span> <span class="n">to</span> <span class="n">user</span><span class="o">&gt;</span><span class="p">}</span>
+</pre></div>
+
+<p>Note, in practice these selectors are not generally used.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/bruth/django-preserialize/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/bruth/django-preserialize/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/bruth/django-preserialize"></a> is maintained by <a href="https://github.com/bruth">bruth</a>.</p>
+
+          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
