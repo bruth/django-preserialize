@@ -3,9 +3,9 @@
 django-preserialize is a one-stop shop for ensuring an object is free of
 `Model` and `QuerySet` instances. By default, all non-relational fields
 will be included as well as the primary keys of local related fields.
-The result will be simply `dict`s and `list`s.
+The resulting containers will simply be `dict`s and `list`s.
 
-_Have a better name? Give me a suggestion!_
+_BTW, have a better name? Give me a suggestion!_
 
 ## Install
 
@@ -40,10 +40,10 @@ A serialized user object might look like this:
 This can then be passed off to a serializer/encoder, e.g. JSON, to turn
 it into a string for the response body (or whatever else you want to do).
 
-## Options
+## Serialize Options
 
-Some fields may not be appropriate or relevent to include in the
-response. To customize which fields get included or excluded, the
+Some fields may not be appropriate or relevent to include as output.
+To customize which fields get included or excluded, the
 following arguments can be passed to ``serialize``:
 
 * `fields` - A list of fields names to include. Method names can also be
@@ -96,7 +96,7 @@ this content, namely JavaScript. Default is `False`.
 
 ## Related Objects
 
-Composite resources are common when dealing with data with tight
+Composite resources are common when dealing with data that have _tight_
 relationships. A user and their user profile is an example of this. It is 
 inefficient for a client to have to make two separate requests for data 
 that is typically always consumed together.
@@ -168,9 +168,8 @@ serialize(users, **user_template)
 ### Mixed Types
 
 It is not always the case that a single model instance or queryset is the
-source of data for a resource. `preserialize.serialize` also understands
-`dict`s and any iterable of `dict`s. They will be treated similarly to the
-model instances.
+source of data for a resource. `serialize` also understands `dict`s and any
+iterable of `dict`s. They will be treated similarly to the model instances.
 
 ### Pseudo-selectors
 
