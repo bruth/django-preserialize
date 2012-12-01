@@ -10,6 +10,7 @@ def model_to_dict(obj, fields, **options):
     obj_dict = {}
     related = options.get('related', {})
     key_map = options.get('key_map', {})
+    allow_missing = options.get('allow_missing', False)
     camelcase = options['camelcase']
     prefix = options.get('key_prefix', '')
 
@@ -21,7 +22,7 @@ def model_to_dict(obj, fields, **options):
         # Get the field value. Use the mapped value to the actually property or
         # method name. `value` may be a number of things, so the various types
         # are checked below.
-        value = get_field_value(obj, actual)
+        value = get_field_value(obj, actual, allow_missing=allow_missing)
 
         # Related objects, perform some checks on their options
         if isinstance(value, (models.Model, QuerySet)):

@@ -263,3 +263,7 @@ class ModelSerializer(unittest.TestCase):
         obj = serialize({'leet_hacker': self.hackers[0]}, camelcase=True,
                 related={'leet_hacker': {'fields': ['signature']}})
         self.assertEqual(obj, {'leetHacker': {'signature': 'John Resig  <>  http://ejohn.org'}})
+
+    def test_allow_missing(self):
+        obj = serialize({}, fields=['foo', 'bar', 'baz'], allow_missing=True)
+        self.assertEqual(obj, {'foo': None, 'bar': None, 'baz': None})

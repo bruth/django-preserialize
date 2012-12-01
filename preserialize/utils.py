@@ -105,12 +105,14 @@ def parse_selectors(model, fields=None, exclude=None, key_map=None, **options):
     return tuple([x for x in validated if x not in exclude])
 
 
-def get_field_value(obj, name):
+def get_field_value(obj, name, allow_missing=False):
+    value = None
+
     if hasattr(obj, name):
         value = getattr(obj, name)
-    elif hasattr(obj, '__getitem__'):
+    elif hasattr(obj, '__getitem__') and name in obj:
         value = obj[name]
-    else:
+    elif not allow_missing:
         raise ValueError('{} has no attribute {}'.format(obj, name))
 
     # Check for callable
