@@ -30,12 +30,7 @@
         <section id="main-content">
           <h1>django-preserialize</h1>
 
-<p>django-preserialize is a one-stop shop for ensuring an object is free of
-<code>Model</code> and <code>QuerySet</code> instances. By default, all non-relational fields
-will be included as well as the primary keys of local related fields.
-The resulting containers will simply be <code>dict</code>s and <code>list</code>s.</p>
-
-<p><em>BTW, have a better name? Give me a suggestion!</em></p>
+<p>django-preserialize is a one-stop shop for ensuring an object is free of <code>Model</code> and <code>QuerySet</code> instances. By default, all non-relational fields will be included as well as the primary keys of local related fields. The resulting containers will simply be <code>dict</code>s and <code>list</code>s.</p>
 
 <h2>Install</h2>
 
@@ -74,44 +69,46 @@ it into a string for the response body (or whatever else you want to do).</p>
 To customize which fields get included or excluded, the
 following arguments can be passed to <code>serialize</code>:</p>
 
-<ul>
-<li>
-<code>fields</code> - A list of fields names to include. Method names can also be
-specified that will be called when being serialized. Default is all local 
-fields and local related fields. See also: <code>exclude</code>, <code>key_map</code>
-</li>
-<li>
-<code>exclude</code> - A list of fields names to exclude (this takes precedence
-over fields). Default is <code>None</code>. See also: <code>fields</code>, <code>key_map</code>
-</li>
-<li>
-<code>related</code> - A dict of related object accessor and configs (see below) for
-handling related object.</li>
-<li>
-<code>values_list</code> - This option only applies to <code>QuerySet</code>s. Returns a list of
-lists with the field values (like Django's <code>ValuesListQuerySet</code>). Default 
-is <code>False</code>.</li>
-<li>
-<code>flatten</code> - Applies only if <code>values_list</code> is <code>True</code> and one field is 
-specified. If <code>True</code>, flattens out the list of lists into a single list of 
-values. Default is <code>True</code>.</li>
-<li>
-<code>key_prefix</code> - A string to be use to prefix the dict keys. To enable 
-dynamic prefixes, the prefix may contain <code>'%(accessor)s' which will be the 
-class name for top-level objects or the accessor name for related objects. 
-Default is</code>None`.</li>
-<li>
-<code>key_map</code> - A dictionary that maps the keys of the output dictionary to 
-the actual field/method names referencing the data. Default is <code>None</code>.  See 
-also: <code>fields</code>
-</li>
-<li>
-<code>camelcase</code> - Converts all keys to a camel-case equivalent. This is 
-merely a convenience for conforming to language convention for consumers of 
-this content, namely JavaScript. Default is <code>False</code>.</li>
-</ul><h3>Examples</h3>
+<p><strong><code>fields</code></strong></p>
 
-<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">serialize</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">'username'</span><span class="p">,</span> <span class="s">'full_name'</span><span class="p">],</span> <span class="n">key_map</span><span class="o">=</span><span class="p">{</span><span class="s">'full_name'</span><span class="p">:</span> <span class="s">'get_full_name'</span><span class="p">},</span> <span class="n">camelcase</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<p>:    A list of fields names to include. Method names can also be specified that will be called when being serialized. Default is all local fields and local related fields. See also: <code>exclude</code>, <code>key_map</code></p>
+
+<p><strong><code>exclude</code></strong></p>
+
+<p>:    A list of fields names to exclude (this takes precedence over fields). Default is <code>None</code>. See also: <code>fields</code>, <code>key_map</code></p>
+
+<p><strong><code>related</code></strong></p>
+
+<p>:    A dict of related object accessors and configs (see below) for handling related objects.</p>
+
+<p><strong><code>values_list</code></strong></p>
+
+<p>:    This option only applies to <code>QuerySet</code>s. Returns a list of lists with the field values (like Django's <code>ValuesListQuerySet</code>). Default is <code>False</code>.</p>
+
+<p><strong><code>flatten</code></strong></p>
+
+<p>:    Applies only if <code>values_list</code> is <code>True</code> and one field is specified. If <code>True</code>, flattens out the list of lists into a single list of  values. Default is <code>True</code>.</p>
+
+<p><strong><code>key_prefix</code></strong></p>
+
+<p>:    A string to be use to prefix the dict keys. To enable dynamic prefixes, the prefix may contain <code>'%(accessor)s'</code> which will be the class name for top-level objects or the accessor name for related objects. Default is <code>None</code>.</p>
+
+<p><strong><code>key_map</code></strong></p>
+
+<p>:    A dictionary that maps the keys of the output dictionary to the actual field/method names referencing the data. Default is <code>None</code>. See also: <code>fields</code></p>
+
+<p><strong><code>camelcase</code></strong></p>
+
+<p>:    Converts all keys to a camel-case equivalent. This is merely a convenience for conforming to language convention for consumers of this content, namely JavaScript. Default is <code>False</code>.</p>
+
+<p><strong><code>allow_missing</code></strong></p>
+
+<p>:   Allow for missing fields (rather than throwing an error) and fill in the value with <code>None</code>.</p>
+
+<h3>Examples</h3>
+
+<div class="highlight"><pre><span class="c"># The field names listed are after the mapping occurs</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">serialize</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">'username'</span><span class="p">,</span> <span class="s">'full_name'</span><span class="p">],</span> <span class="n">key_map</span><span class="o">=</span><span class="p">{</span><span class="s">'full_name'</span><span class="p">:</span> <span class="s">'get_full_name'</span><span class="p">},</span> <span class="n">camelcase</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="s">'fullName'</span><span class="p">:</span> <span class="s">u'Jon Doe'</span><span class="p">,</span>
     <span class="s">'username'</span><span class="p">:</span> <span class="s">u'jdoe'</span>
@@ -130,25 +127,26 @@ this content, namely JavaScript. Default is <code>False</code>.</li>
     <span class="s">'last_name'</span><span class="p">:</span> <span class="s">u'Doe'</span><span class="p">,</span>
     <span class="s">'username'</span><span class="p">:</span> <span class="s">u'jdoe'</span>
 <span class="p">}</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">serialize</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">'foo'</span><span class="p">,</span> <span class="s">'bar'</span><span class="p">,</span> <span class="s">'baz'</span><span class="p">],</span> <span class="n">allow_missing</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="s">'foo'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+    <span class="s">'bar'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+    <span class="s">'baz'</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+<span class="p">}</span>
 </pre></div>
 
 <h2>Related Objects</h2>
 
-<p>Composite resources are common when dealing with data that have <em>tight</em>
-relationships. A user and their user profile is an example of this. It is 
-inefficient for a client to have to make two separate requests for data 
-that is typically always consumed together.</p>
+<p>Composite resources are common when dealing with data that have <em>tight</em> relationships. A user and their user profile is an example of this. It is inefficient for a client to have to make two separate requests for data that is typically always consumed together.</p>
 
-<p><code>serialize</code> supports the <code>related</code> keyword argument for defining options for
-relational fields. The following additional attributes (to the above) may be
-defined:</p>
+<p><code>serialize</code> supports the <code>related</code> keyword argument for defining options for relational fields. The following additional argument (to the above) may be defined:</p>
 
-<ul>
-<li>
-<code>merge</code> - This option only applies to local <code>ForeignKey</code> or 
-<code>OneToOneField</code>. This allows for merging this object's fields into the 
-parent object.</li>
-</ul><div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">serialize</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">related</span><span class="o">=</span><span class="p">{</span><span class="s">'groups'</span><span class="p">:</span> <span class="p">{</span><span class="s">'fields'</span><span class="p">:</span> <span class="p">[</span><span class="s">'name'</span><span class="p">]},</span> <span class="s">'profile'</span><span class="p">:</span> <span class="p">{</span><span class="s">'merge'</span><span class="p">:</span> <span class="bp">True</span><span class="p">}})</span>
+<p><strong><code>merge</code></strong></p>
+
+<p>:    This option only applies to local <code>ForeignKey</code> or <code>OneToOneField</code>. This allows for merging the related object's fields into the parent object.</p>
+
+<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">serialize</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">related</span><span class="o">=</span><span class="p">{</span><span class="s">'groups'</span><span class="p">:</span> <span class="p">{</span><span class="s">'fields'</span><span class="p">:</span> <span class="p">[</span><span class="s">'name'</span><span class="p">]},</span> <span class="s">'profile'</span><span class="p">:</span> <span class="p">{</span><span class="s">'merge'</span><span class="p">:</span> <span class="bp">True</span><span class="p">}})</span>
 <span class="p">{</span>
     <span class="s">'username'</span><span class="p">:</span> <span class="s">u'jdoe'</span><span class="p">,</span>
     <span class="s">'groups'</span><span class="p">:</span> <span class="p">[{</span>
@@ -163,10 +161,9 @@ parent object.</li>
 
 <h2>Conventions</h2>
 
-<p><strong>Define a <code>data_template</code> dict for each model that will be serialized.</strong></p>
+<p><strong>Define a template dict for each model that will be serialized.</strong></p>
 
-<p>Defining a <code>data_template</code> enables reuse across different serialized
-objects. Deconstructing the above example, we have:</p>
+<p>Defining a <em>template</em> enables reuse across different serialized objects as well as increases readability and maintainability. Deconstructing the above example, we have:</p>
 
 <div class="highlight"><pre><span class="c"># Render a list of group names.. note that 'values_list'</span>
 <span class="c"># options is implied here since there is only one field</span>
@@ -176,12 +173,13 @@ objects. Deconstructing the above example, we have:</p>
     <span class="s">'values_list'</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
 <span class="p">}</span>
 
-<span class="c"># User profiles are typically only wanted to be merge into</span>
+<span class="c"># User profiles are typically always wanted to be merged into</span>
 <span class="c"># User, so we can add the 'merge' option. Remember this simply</span>
 <span class="c"># gets ignored if 'UserProfile' is the top-level object being</span>
 <span class="c"># serialized.</span>
 <span class="n">profile_template</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s">'merge'</span><span class="p">:</span> <span class="bp">True</span>
+    <span class="sb">`exclude`</span><span class="p">:</span> <span class="p">[</span><span class="s">'user'</span><span class="p">],</span>
+    <span class="s">'merge'</span><span class="p">:</span> <span class="bp">True</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="c"># Users typically always include some related data (groups and their</span>
@@ -196,79 +194,53 @@ objects. Deconstructing the above example, we have:</p>
 
 <span class="c"># Everyone is the pool!</span>
 <span class="n">users</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-<span class="c"># Now we can use Python's wonderful argument _unpacking_ syntax. Clean.</span>
+<span class="c"># Now we can use Python's wonderful argument _unpacking_ syntax.</span>
+<span class="c"># Clean.</span>
 <span class="n">serialize</span><span class="p">(</span><span class="n">users</span><span class="p">,</span> <span class="o">**</span><span class="n">user_template</span><span class="p">)</span>
 </pre></div>
 
-<h2>Niceties</h2>
+<h2>FAQ</h2>
 
-<h3>Mixed Types</h3>
+<h3>Does the serializer only understand model fields?</h3>
 
-<p>It is not always the case that a single model instance or queryset is the
-source of data for a resource. <code>serialize</code> also understands <code>dict</code>s and any
-iterable of <code>dict</code>s. They will be treated similarly to the model instances.</p>
+<p>No. In fact it is smart about accessing the <em>field</em>. The following steps are taken when attempting to get the value:</p>
 
-<h3>Pseudo-selectors</h3>
+<ol>
+<li>Use <code>hasattr</code> to check if an attribute/property is present</li>
+<li>If the object support <code>__getitem__</code>, check if the key is present</li>
+</ol><p>Assuming one of those two methods succeed, it will check if the value is callable and will call it (useful for methods). If the value is a <code>RelatedManager</code>, it will resolve the <code>QuerySet</code> and recursive downstream.</p>
 
-<p>The <code>fields</code> and <code>exclude</code> options understands four <em>pseudo-selectors</em> which
-can be used in place of typing out all of a model's field names (although
-being explicit is always better).</p>
+<h3>Does the serializer only support model instances?</h3>
 
-<ul>
-<li>
-<code>:pk</code> - the primary key field of the model</li>
-<li>
-<code>:local</code> - all local fields on a model (including local foreign keys and
-many-to-many fields)</li>
-<li>
-<code>:related</code> - all related fields (reverse foreign key and many-to-many)</li>
-<li>
-<code>:all</code> - a composite of all selectors above and thus any an all fields
-on or related to a model</li>
-</ul><p>You can use them like this:</p>
+<p>No. It is not always the case that a single model instance or queryset is the source of data for a resource. <code>serialize</code> also understands <code>dict</code>s and any iterable of <code>dict</code>s. They will be treated similarly to the model instances.</p>
+
+<h3>My model has a ton of fields and I don't want to type them all out. What do I do?</h3>
+
+<p>The <code>fields</code> and <code>exclude</code> options understands four <em>pseudo-selectors</em> which can be used in place of typing out all of a model's field names (although being explicit is typically better).</p>
+
+<p><strong><code>:pk</code></strong></p>
+
+<p>:    The primary key field of the model</p>
+
+<p><strong><code>:local</code></strong></p>
+
+<p>:    All local fields on a model (including local foreign keys and
+many-to-many fields)</p>
+
+<p><strong><code>:related</code></strong></p>
+
+<p>:    All related fields (reverse foreign key and many-to-many)</p>
+
+<p><strong><code>:all</code></strong></p>
+
+<p>:    A composite of all selectors above and thus any an all fields on or related to a model</p>
+
+<p>You can use them like this:</p>
 
 <div class="highlight"><pre><span class="c"># The two selectors here are actually the default, but defined</span>
 <span class="c"># for the example.</span>
-<span class="n">serialize</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">':pk'</span><span class="p">,</span> <span class="s">':local'</span><span class="p">],</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s">'password'</span><span class="p">])</span>
+<span class="n">serialize</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">':pk'</span><span class="p">,</span> <span class="s">':local'</span><span class="p">,</span> <span class="s">'foo'</span><span class="p">],</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s">'password'</span><span class="p">])</span>
 </pre></div>
-
-<p>For those curious, try this:</p>
-
-<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">preserialize.utils</span> <span class="kn">import</span> <span class="n">resolver</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">pprint</span><span class="p">(</span><span class="n">resolver</span><span class="o">.</span><span class="n">_get_fields</span><span class="p">(</span><span class="n">User</span><span class="p">))</span>
-<span class="p">{</span><span class="s">':all'</span><span class="p">:</span> <span class="p">{</span><span class="s">'date_joined'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">:</span> <span class="n">date_joined</span><span class="o">&gt;</span><span class="p">,</span>
-          <span class="s">'email'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">EmailField</span><span class="p">:</span> <span class="n">email</span><span class="o">&gt;</span><span class="p">,</span>
-          <span class="s">'first_name'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">CharField</span><span class="p">:</span> <span class="n">first_name</span><span class="o">&gt;</span><span class="p">,</span>
-          <span class="s">'groups'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">related</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">:</span> <span class="n">groups</span><span class="o">&gt;</span><span class="p">,</span>
-          <span class="s">'id'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">AutoField</span><span class="p">:</span> <span class="nb">id</span><span class="o">&gt;</span><span class="p">,</span>
-          <span class="s">'is_active'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">:</span> <span class="n">is_active</span><span class="o">&gt;</span><span class="p">,</span>
-          <span class="s">'is_staff'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">:</span> <span class="n">is_staff</span><span class="o">&gt;</span><span class="p">,</span>
-          <span class="s">'is_superuser'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">:</span> <span class="n">is_superuser</span><span class="o">&gt;</span><span class="p">,</span>
-          <span class="s">'last_login'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">:</span> <span class="n">last_login</span><span class="o">&gt;</span><span class="p">,</span>
-          <span class="s">'last_name'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">CharField</span><span class="p">:</span> <span class="n">last_name</span><span class="o">&gt;</span><span class="p">,</span>
-          <span class="s">'logentry_set'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">RelatedObject</span><span class="p">:</span> <span class="n">admin</span><span class="p">:</span><span class="n">logentry</span> <span class="n">related</span> <span class="n">to</span> <span class="n">user</span><span class="o">&gt;</span><span class="p">,</span>
-          <span class="s">'password'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">CharField</span><span class="p">:</span> <span class="n">password</span><span class="o">&gt;</span><span class="p">,</span>
-          <span class="s">'user_permissions'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">related</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">:</span> <span class="n">user_permissions</span><span class="o">&gt;</span><span class="p">,</span>
-          <span class="s">'username'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">CharField</span><span class="p">:</span> <span class="n">username</span><span class="o">&gt;</span><span class="p">},</span>
- <span class="s">':local'</span><span class="p">:</span> <span class="p">{</span><span class="s">'date_joined'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">:</span> <span class="n">date_joined</span><span class="o">&gt;</span><span class="p">,</span>
-            <span class="s">'email'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">EmailField</span><span class="p">:</span> <span class="n">email</span><span class="o">&gt;</span><span class="p">,</span>
-            <span class="s">'first_name'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">CharField</span><span class="p">:</span> <span class="n">first_name</span><span class="o">&gt;</span><span class="p">,</span>
-            <span class="s">'groups'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">related</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">:</span> <span class="n">groups</span><span class="o">&gt;</span><span class="p">,</span>
-            <span class="s">'id'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">AutoField</span><span class="p">:</span> <span class="nb">id</span><span class="o">&gt;</span><span class="p">,</span>
-            <span class="s">'is_active'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">:</span> <span class="n">is_active</span><span class="o">&gt;</span><span class="p">,</span>
-            <span class="s">'is_staff'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">:</span> <span class="n">is_staff</span><span class="o">&gt;</span><span class="p">,</span>
-            <span class="s">'is_superuser'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">:</span> <span class="n">is_superuser</span><span class="o">&gt;</span><span class="p">,</span>
-            <span class="s">'last_login'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">:</span> <span class="n">last_login</span><span class="o">&gt;</span><span class="p">,</span>
-            <span class="s">'last_name'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">CharField</span><span class="p">:</span> <span class="n">last_name</span><span class="o">&gt;</span><span class="p">,</span>
-            <span class="s">'password'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">CharField</span><span class="p">:</span> <span class="n">password</span><span class="o">&gt;</span><span class="p">,</span>
-            <span class="s">'user_permissions'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">related</span><span class="o">.</span><span class="n">ManyToManyField</span><span class="p">:</span> <span class="n">user_permissions</span><span class="o">&gt;</span><span class="p">,</span>
-            <span class="s">'username'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">CharField</span><span class="p">:</span> <span class="n">username</span><span class="o">&gt;</span><span class="p">},</span>
- <span class="s">':pk'</span><span class="p">:</span> <span class="p">{</span><span class="s">'id'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">django</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">AutoField</span><span class="p">:</span> <span class="nb">id</span><span class="o">&gt;</span><span class="p">},</span>
- <span class="s">':related'</span><span class="p">:</span> <span class="p">{</span><span class="s">'logentry_set'</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">RelatedObject</span><span class="p">:</span> <span class="n">admin</span><span class="p">:</span><span class="n">logentry</span> <span class="n">related</span> <span class="n">to</span> <span class="n">user</span><span class="o">&gt;</span><span class="p">}</span>
-</pre></div>
-
-<p>Note, in practice these selectors are not generally used.</p>
         </section>
 
         <aside id="sidebar">
