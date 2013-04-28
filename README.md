@@ -43,45 +43,122 @@ following arguments can be passed to ``serialize``:
 
 **`fields`**
 
-:    A list of fields names to include. Method names can also be specified that will be called when being serialized. Default is all local fields and local related fields. See also: `exclude`, `key_map`
+A list of fields names to include. Method names can also be specified that will be called when being serialized. Default is all local fields and local related fields. See also: `exclude`, `aliases`
 
 **`exclude`**
 
-:    A list of fields names to exclude (this takes precedence over fields). Default is `None`. See also: `fields`, `key_map`
+A list of fields names to exclude (this takes precedence over fields). Default is `None`. See also: `fields`, `aliases`
 
 **`related`**
 
-:    A dict of related object accessors and configs (see below) for handling related objects.
+A dict of related object accessors and configs (see below) for handling related objects.
 
 **`values_list`**
 
-:    This option only applies to `QuerySet`s. Returns a list of lists with the field values (like Django's `ValuesListQuerySet`). Default is `False`.
+This option only applies to `QuerySet`s. Returns a list of lists with the field values (like Django's `ValuesListQuerySet`). Default is `False`.
 
 **`flatten`**
 
-:    Applies only if `values_list` is `True` and one field is specified. If `True`, flattens out the list of lists into a single list of  values. Default is `True`.
+Applies only if `values_list` is `True` and one field is specified. If `True`, flattens out the list of lists into a single list of  values. Default is `True`.
 
-**`key_prefix`**
+**`prefix`**
 
-:    A string to be use to prefix the dict keys. To enable dynamic prefixes, the prefix may contain `'%(accessor)s'` which will be the class name for top-level objects or the accessor name for related objects. Default is `None`.
+A string to be use to prefix the dict keys. To enable dynamic prefixes, the prefix may contain `'%(accessor)s'` which will be the class name for top-level objects or the accessor name for related objects. Default is `None`.
 
-**`key_map`**
+**`aliases`**
 
-:    A dictionary that maps the keys of the output dictionary to the actual field/method names referencing the data. Default is `None`. See also: `fields`
+A dictionary that maps the keys of the output dictionary to the actual field/method names referencing the data. Default is `None`. See also: `fields`
 
 **`camelcase`**
 
-:    Converts all keys to a camel-case equivalent. This is merely a convenience for conforming to language convention for consumers of this content, namely JavaScript. Default is `False`.
+Converts all keys to a camel-case equivalent. This is merely a convenience for conforming to language convention for consumers of this content, namely JavaScript. Default is `False`.
 
 **`allow_missing`**
 
-:   Allow for missing fields (rather than throwing an error) and fill in the value with `None`.
+Allow for missing fields (rather than throwing an error) and fill in the value with `None`.
+
+### Hooks
+
+Hooks enable altering the objects that are serialized at each level.
+
+**`prehook`**
+
+
+
+A function that takes and returns an object. For `QuerySet`s it can be used for filtering or annotating additional data to each model instance. For `Model` instances it can be prefetching additional data, swapping out an instance or whatever is necessary prior to serialization.
+
+Since filtering `QuerySet`s is a common use case, a simple dict can be supplied instead of a function that will be passed to the `filter` method.
+
+Here are two examples for filtering `posts` by the requesting user.
+
+The shorthand method of using a `dict`:
+
+```python
+def view(request):
+    template = {
+        'related': {
+            'posts': {
+                'prehook': {'user': request.user},
+            }
+        }
+    }
+    ...
+```
+
+For applying conditional logic, a function can be used:
+
+```python
+from functools import partial
+
+def filter_by_user(queryset, user):
+    if not user.is_superuser:
+        queryset = queryset.filter(user=user)
+    return queryset
+
+def view(request):
+    template = {
+        'related': {
+            'posts': {
+                'prehook': partial(filter_by_user, request=request)
+            }
+        }
+    }
+    ...
+```
+
+**`posthook`**
+
+A function that takes the serialized attrs _per model instance_ for post-processing. This is specifically useful for augmenting or modifying the data prior to being added to the large serialized data structure.
+
+Even if the related object (like `posts` above) is a `QuerySet`, this hook is applied per object in the `QuerySet`. This is because it would rarely ever be necessary to process a list of objects as a whole since filtering can already be performed above (using the `prehook`) prior to serialization.
+
+Here is an example of adding resource links to the output data based on the serialized attributes:
+
+```python
+from functools import partial
+from django.core.urlresolvers import reverse
+
+def add_resource_links(attrs, request):
+    uri = request.build_absolute_uri
+    attrs['_links'] = {
+        'self': {
+            'href': uri(reverse('api:foo:bar', kwargs={'pk': attrs.id})),
+        },
+        ...
+    }
+    return attrs
+
+template = {
+    'posthook': partial(add_resource_links, request=request),
+    ...
+}
+```
 
 ### Examples
 
 ```python
 # The field names listed are after the mapping occurs
->>> serialize(user, fields=['username', 'full_name'], key_map={'full_name': 'get_full_name'}, camelcase=True)
+>>> serialize(user, fields=['username', 'full_name'], aliases={'full_name': 'get_full_name'}, camelcase=True)
 {
     'fullName': u'Jon Doe',
     'username': u'jdoe'
@@ -117,7 +194,7 @@ Composite resources are common when dealing with data that have _tight_ relation
 
 **`merge`**
 
-:    This option only applies to local `ForeignKey` or `OneToOneField`. This allows for merging the related object's fields into the parent object.
+This option only applies to local `ForeignKey` or `OneToOneField`. This allows for merging the related object's fields into the parent object.
 
 ```python
 >>> serialize(user, related={'groups': {'fields': ['name']}, 'profile': {'merge': True}})
@@ -195,20 +272,20 @@ The `fields` and `exclude` options understands four _pseudo-selectors_ which can
 
 **`:pk`**
 
-:    The primary key field of the model
+The primary key field of the model
 
 **`:local`**
 
-:    All local fields on a model (including local foreign keys and
+All local fields on a model (including local foreign keys and
 many-to-many fields)
 
 **`:related`**
 
-:    All related fields (reverse foreign key and many-to-many)
+All related fields (reverse foreign key and many-to-many)
 
 **`:all`**
 
-:    A composite of all selectors above and thus any an all fields on or related to a model
+A composite of all selectors above and thus any an all fields on or related to a model
 
 You can use them like this:
 
@@ -217,3 +294,14 @@ You can use them like this:
 # for the example.
 serialize(user, fields=[':pk', ':local', 'foo'], exclude=['password'])
 ```
+
+## CHANGELOG
+
+2013-04-28
+
+- Add `prehook` and `posthook` options
+- Rename `key_map` to `aliases` for clarity
+- Rename `key_prefix` to `prefix`
+    - It is implied the prefix applies to the keys since this a serialization
+    utility
+- Internal clean up

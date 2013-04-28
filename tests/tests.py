@@ -1,6 +1,7 @@
 import unittest
 import datetime
 from django.db import models
+from django.db.models.query import QuerySet
 from django.contrib.auth.models import User
 from preserialize import utils
 from preserialize.serialize import serialize
@@ -151,7 +152,7 @@ class ModelSerializer(unittest.TestCase):
                 'user': {
                     'exclude': ['groups', 'password', 'user_permissions'],
                     'merge': True,
-                    'key_prefix': '%(accessor)s_',
+                    'prefix': '%(accessor)s_',
                 },
                 'libraries': {
                     'fields': ['name'],
@@ -267,3 +268,45 @@ class ModelSerializer(unittest.TestCase):
     def test_allow_missing(self):
         obj = serialize({}, fields=['foo', 'bar', 'baz'], allow_missing=True)
         self.assertEqual(obj, {'foo': None, 'bar': None, 'baz': None})
+
+    def test_prehook_shorthand(self):
+        obj = serialize(self.hackers, prehook={'user__first_name': 'John'},
+            fields=['user'], related={'user': {'fields': ['first_name']}})
+
+        self.assertEqual(obj, [{
+            'user': {
+                'first_name': u'John',
+            }
+        }])
+
+    def test_prehook(self):
+        def prehook(queryset):
+            # Ensure this only applies to a QuerySet, acts as a no-op for
+            # model instances
+            if isinstance(queryset, QuerySet):
+                queryset = queryset.filter(user__first_name='John')
+            return queryset
+
+        obj = serialize(self.hackers, prehook=prehook, fields=['user'],
+            related={'user': {'fields': ['first_name']}})
+
+        self.assertEqual(obj, [{
+            'user': {
+                'first_name': u'John',
+            }
+        }])
+
+    def test_posthook(self):
+        def posthook(attrs):
+            attrs['foo'] = 1
+            return attrs
+
+        obj = serialize(self.hackers[0], posthook=posthook,
+            fields=['user'], related={'user': {'fields': ['first_name']}})
+
+        self.assertEqual(obj, {
+            'foo': 1,
+            'user': {
+                'first_name': u'John',
+            }
+        })
