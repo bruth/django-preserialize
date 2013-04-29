@@ -59,7 +59,7 @@ This option only applies to `QuerySet`s. Returns a list of lists with the field 
 
 **`flat`**
 
-Applies only if one field is specified in `fields`. If applied to a `QuerySet` and if `values_list` is `True` the values will be flattened out. If applied to a model instance, the single field value will used (in place of the dict). Default is `True`.
+Applies only if one field is specified in `fields`. If applied to a `QuerySet` and if `values_list` is `True` the values will be flattened out. If applied to a model instance, the single field value will used (in place of the dict). Note, if `merge` is true, this option has not effect. Default is `True`.
 
 **`prefix`**
 
@@ -296,6 +296,11 @@ serialize(user, fields=[':pk', ':local', 'foo'], exclude=['password'])
 ```
 
 ## CHANGELOG
+
+2013-04-29
+
+- Fix bug where the `flat` option was not respecting `merge`
+    - If `merge` is set, it takes precedence over flat
 
 2013-04-28
 

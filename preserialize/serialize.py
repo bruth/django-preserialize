@@ -90,7 +90,7 @@ def model_to_dict(instance, **options):
                 _options['prefix'] = _options['prefix'] % {'accessor': alias}
 
             if isinstance(value, models.Model):
-                if len(_options['fields']) == 1 and _options['flat']:
+                if len(_options['fields']) == 1 and _options['flat'] and not _options['merge']:
                     value = get_field_value(value, _options['fields'][0],
                         allow_missing=_options['allow_missing'])
                 else:
