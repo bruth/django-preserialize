@@ -1,5 +1,4 @@
 import warnings
-from collections import defaultdict
 from django.db import models
 from django.conf import settings
 from django.db.models.query import QuerySet
@@ -43,7 +42,7 @@ def _defaults(options):
         defaults['fields'] = []
 
     if 'related' not in defaults:
-        defaults['related'] = defaultdict(dict)
+        defaults['related'] = {}
 
     return defaults
 
@@ -82,7 +81,7 @@ def model_to_dict(instance, **options):
 
         # Related objects, perform some checks on their options
         if isinstance(value, (models.Model, QuerySet)):
-            _options = _defaults(options['related'][accessor])
+            _options = _defaults(options['related'].get(accessor, {}))
 
             # If the `prefix` follows the below template, generate the
             # `prefix` for the related object
