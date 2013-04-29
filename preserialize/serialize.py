@@ -90,19 +90,24 @@ def model_to_dict(instance, **options):
                 _options['prefix'] = _options['prefix'] % {'accessor': alias}
 
             if isinstance(value, models.Model):
-                # Recursve, get the dict representation
-                _attrs = serialize(value, **_options)
-
-                # Check if this object should be merged into the parent,
-                # otherwise nest it under the accessor name
-                if _options['merge']:
-                    attrs.update(_attrs)
+                if len(_options['fields']) == 1 and _options['flat']:
+                    value = get_field_value(value, _options['fields'][0],
+                        allow_missing=_options['allow_missing'])
                 else:
-                    attrs[key] = _attrs
+                    # Recurse, get the dict representation
+                    _attrs = serialize(value, **_options)
+
+                    # Check if this object should be merged into the parent,
+                    # otherwise nest it under the accessor name
+                    if _options['merge']:
+                        attrs.update(_attrs)
+                        continue
+
+                    value = _attrs
             else:
-                attrs[key] = serialize(value, **_options)
-        else:
-            attrs[key] = value
+                value = serialize(value, **_options)
+
+        attrs[key] = value
 
     # Apply post-hook to serialized attributes
     if options['posthook']:

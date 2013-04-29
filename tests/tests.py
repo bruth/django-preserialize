@@ -262,7 +262,7 @@ class ModelSerializer(unittest.TestCase):
 
     def test_mixed_obj(self):
         obj = serialize({'leet_hacker': self.hackers[0]}, camelcase=True,
-                related={'leet_hacker': {'fields': ['signature']}})
+                related={'leet_hacker': {'fields': ['signature'], 'flat': False}})
         self.assertEqual(obj, {'leetHacker': {'signature': 'John Resig  <>  http://ejohn.org'}})
 
     def test_allow_missing(self):
@@ -274,9 +274,7 @@ class ModelSerializer(unittest.TestCase):
             fields=['user'], related={'user': {'fields': ['first_name']}})
 
         self.assertEqual(obj, [{
-            'user': {
-                'first_name': u'John',
-            }
+            'user': u'John',
         }])
 
     def test_prehook(self):
@@ -291,9 +289,7 @@ class ModelSerializer(unittest.TestCase):
             related={'user': {'fields': ['first_name']}})
 
         self.assertEqual(obj, [{
-            'user': {
-                'first_name': u'John',
-            }
+            'user': u'John',
         }])
 
     def test_posthook(self):
@@ -306,7 +302,5 @@ class ModelSerializer(unittest.TestCase):
 
         self.assertEqual(obj, {
             'foo': 1,
-            'user': {
-                'first_name': u'John',
-            }
+            'user': u'John',
         })

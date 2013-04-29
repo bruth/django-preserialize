@@ -57,9 +57,9 @@ A dict of related object accessors and configs (see below) for handling related 
 
 This option only applies to `QuerySet`s. Returns a list of lists with the field values (like Django's `ValuesListQuerySet`). Default is `False`.
 
-**`flatten`**
+**`flat`**
 
-Applies only if `values_list` is `True` and one field is specified. If `True`, flattens out the list of lists into a single list of  values. Default is `True`.
+Applies only if one field is specified in `fields`. If applied to a `QuerySet` and if `values_list` is `True` the values will be flattened out. If applied to a model instance, the single field value will used (in place of the dict). Default is `True`.
 
 **`prefix`**
 
@@ -300,8 +300,11 @@ serialize(user, fields=[':pk', ':local', 'foo'], exclude=['password'])
 2013-04-28
 
 - Add `prehook` and `posthook` options
+- Add support for `flat` option for model instances with a single field
 - Rename `key_map` to `aliases` for clarity
 - Rename `key_prefix` to `prefix`
     - It is implied the prefix applies to the keys since this a serialization
     utility
 - Internal clean up
+- Correct documentation regarding the `flat` option
+    - It was incorrectly named `flatten`
