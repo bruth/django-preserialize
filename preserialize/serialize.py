@@ -110,7 +110,7 @@ def model_to_dict(instance, **options):
 
     # Apply post-hook to serialized attributes
     if options['posthook']:
-        attrs = options['posthook'](attrs)
+        attrs = options['posthook'](instance, attrs)
 
     return attrs
 

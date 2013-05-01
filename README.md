@@ -128,7 +128,7 @@ def view(request):
 
 **`posthook`**
 
-A function that takes the serialized attrs _per model instance_ for post-processing. This is specifically useful for augmenting or modifying the data prior to being added to the large serialized data structure.
+A function that takes the original model instance and the serialized attrs for post-processing. This is specifically useful for augmenting or modifying the data prior to being added to the large serialized data structure.
 
 Even if the related object (like `posts` above) is a `QuerySet`, this hook is applied per object in the `QuerySet`. This is because it would rarely ever be necessary to process a list of objects as a whole since filtering can already be performed above (using the `prehook`) prior to serialization.
 
@@ -138,7 +138,7 @@ Here is an example of adding resource links to the output data based on the seri
 from functools import partial
 from django.core.urlresolvers import reverse
 
-def add_resource_links(attrs, request):
+def add_resource_links(instance, attrs, request):
     uri = request.build_absolute_uri
     attrs['_links'] = {
         'self': {
@@ -296,6 +296,11 @@ serialize(user, fields=[':pk', ':local', 'foo'], exclude=['password'])
 ```
 
 ## CHANGELOG
+
+2013-05-01
+
+- Update `posthook` to take the original instance as the first argument and the
+serialized data as the second argument
 
 2013-04-29
 
