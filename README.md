@@ -299,8 +299,8 @@ serialize(user, fields=[':pk', ':local', 'foo'], exclude=['password'])
 
 2013-05-01
 
-- Update `posthook` to take the original instance as the first argument and the
-serialized data as the second argument
+- Update `posthook` to take the original instance as the first argument and the serialized data as the second argument
+- Ensure the passed object is returned from `serialize` even if it does not qualify to be processed
 
 2013-04-29
 

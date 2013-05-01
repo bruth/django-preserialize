@@ -171,3 +171,5 @@ def serialize(obj, fields=None, exclude=None, **options):
     # Handle other iterables
     if hasattr(obj, '__iter__'):
         return map(lambda x: serialize(x, fields, exclude, **options), obj)
+
+    return obj
