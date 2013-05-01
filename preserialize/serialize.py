@@ -90,8 +90,7 @@ def model_to_dict(instance, **options):
 
             if isinstance(value, models.Model):
                 if len(_options['fields']) == 1 and _options['flat'] and not _options['merge']:
-                    value = get_field_value(value, _options['fields'][0],
-                        allow_missing=_options['allow_missing'])
+                    value = serialize(value, **_options).values()[0]
                 else:
                     # Recurse, get the dict representation
                     _attrs = serialize(value, **_options)
