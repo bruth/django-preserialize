@@ -10,3 +10,5 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'tests',
 )
+
+SECRET_KEY = 'abc123'
