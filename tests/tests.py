@@ -293,7 +293,7 @@ class ModelSerializer(unittest.TestCase):
         }])
 
     def test_posthook(self):
-        def posthook(attrs):
+        def posthook(instance, attrs):
             attrs['foo'] = 1
             return attrs
 
