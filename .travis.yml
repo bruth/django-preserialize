@@ -6,6 +6,9 @@ env:
     - DJANGO=1.4.5
     - DJANGO=1.5.1
 install:
+    - pip install coveralls
     - pip install -q Django==$DJANGO --use-mirrors
 script:
-    - python setup.py test
+    - coverage run --source=preserialize setup.py test
+after_success:
+    - coveralls
