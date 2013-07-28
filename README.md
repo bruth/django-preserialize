@@ -1,5 +1,9 @@
 # django-preserialize
 
+[![Build Status](https://travis-ci.org/bruth/django-preserialize.png)](https://travis-ci.org/bruth/django-preserialize)
+
+[![Coverage Status](https://coveralls.io/repos/bruth/django-preserialize/badge.png?branch=master)](https://coveralls.io/r/bruth/django-preserialize?branch=master)
+
 django-preserialize is a one-stop shop for ensuring an object is free of `Model` and `QuerySet` instances. By default, all non-relational fields will be included as well as the primary keys of local related fields. The resulting containers will simply be `dict`s and `list`s.
 
 ## Install
