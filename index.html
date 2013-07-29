@@ -28,16 +28,21 @@
     <div id="content-wrapper">
       <div class="inner clearfix">
         <section id="main-content">
-          <h1>django-preserialize</h1>
+          <h1>
+<a name="django-preserialize" class="anchor" href="#django-preserialize"><span class="octicon octicon-link"></span></a>django-preserialize</h1>
+
+<p><a href="https://travis-ci.org/bruth/django-preserialize"><img src="https://travis-ci.org/bruth/django-preserialize.png" alt="Build Status"></a> <a href="https://coveralls.io/r/bruth/django-preserialize?branch=master"><img src="https://coveralls.io/repos/bruth/django-preserialize/badge.png?branch=master" alt="Coverage Status"></a></p>
 
 <p>django-preserialize is a one-stop shop for ensuring an object is free of <code>Model</code> and <code>QuerySet</code> instances. By default, all non-relational fields will be included as well as the primary keys of local related fields. The resulting containers will simply be <code>dict</code>s and <code>list</code>s.</p>
 
-<h2>Install</h2>
+<h2>
+<a name="install" class="anchor" href="#install"><span class="octicon octicon-link"></span></a>Install</h2>
 
 <div class="highlight"><pre>pip install django-preserialize
 </pre></div>
 
-<h2>Docs</h2>
+<h2>
+<a name="docs" class="anchor" href="#docs"><span class="octicon octicon-link"></span></a>Docs</h2>
 
 <p>A serialized user object might look like this:</p>
 
@@ -63,7 +68,8 @@
 <p>This can then be passed off to a serializer/encoder, e.g. JSON, to turn
 it into a string for the response body (or whatever else you want to do).</p>
 
-<h2>Serialize Options</h2>
+<h2>
+<a name="serialize-options" class="anchor" href="#serialize-options"><span class="octicon octicon-link"></span></a>Serialize Options</h2>
 
 <p>Some fields may not be appropriate or relevent to include as output.
 To customize which fields get included or excluded, the
@@ -71,44 +77,118 @@ following arguments can be passed to <code>serialize</code>:</p>
 
 <p><strong><code>fields</code></strong></p>
 
-<p>:    A list of fields names to include. Method names can also be specified that will be called when being serialized. Default is all local fields and local related fields. See also: <code>exclude</code>, <code>key_map</code></p>
+<p>A list of fields names to include. Method names can also be specified that will be called when being serialized. Default is all local fields and local related fields. See also: <code>exclude</code>, <code>aliases</code></p>
 
 <p><strong><code>exclude</code></strong></p>
 
-<p>:    A list of fields names to exclude (this takes precedence over fields). Default is <code>None</code>. See also: <code>fields</code>, <code>key_map</code></p>
+<p>A list of fields names to exclude (this takes precedence over fields). Default is <code>None</code>. See also: <code>fields</code>, <code>aliases</code></p>
 
 <p><strong><code>related</code></strong></p>
 
-<p>:    A dict of related object accessors and configs (see below) for handling related objects.</p>
+<p>A dict of related object accessors and configs (see below) for handling related objects.</p>
 
 <p><strong><code>values_list</code></strong></p>
 
-<p>:    This option only applies to <code>QuerySet</code>s. Returns a list of lists with the field values (like Django's <code>ValuesListQuerySet</code>). Default is <code>False</code>.</p>
+<p>This option only applies to <code>QuerySet</code>s. Returns a list of lists with the field values (like Django's <code>ValuesListQuerySet</code>). Default is <code>False</code>.</p>
 
-<p><strong><code>flatten</code></strong></p>
+<p><strong><code>flat</code></strong></p>
 
-<p>:    Applies only if <code>values_list</code> is <code>True</code> and one field is specified. If <code>True</code>, flattens out the list of lists into a single list of  values. Default is <code>True</code>.</p>
+<p>Applies only if one field is specified in <code>fields</code>. If applied to a <code>QuerySet</code> and if <code>values_list</code> is <code>True</code> the values will be flattened out. If applied to a model instance, the single field value will used (in place of the dict). Note, if <code>merge</code> is true, this option has not effect. Default is <code>True</code>.</p>
 
-<p><strong><code>key_prefix</code></strong></p>
+<p><strong><code>prefix</code></strong></p>
 
-<p>:    A string to be use to prefix the dict keys. To enable dynamic prefixes, the prefix may contain <code>'%(accessor)s'</code> which will be the class name for top-level objects or the accessor name for related objects. Default is <code>None</code>.</p>
+<p>A string to be use to prefix the dict keys. To enable dynamic prefixes, the prefix may contain <code>'%(accessor)s'</code> which will be the class name for top-level objects or the accessor name for related objects. Default is <code>None</code>.</p>
 
-<p><strong><code>key_map</code></strong></p>
+<p><strong><code>aliases</code></strong></p>
 
-<p>:    A dictionary that maps the keys of the output dictionary to the actual field/method names referencing the data. Default is <code>None</code>. See also: <code>fields</code></p>
+<p>A dictionary that maps the keys of the output dictionary to the actual field/method names referencing the data. Default is <code>None</code>. See also: <code>fields</code></p>
 
 <p><strong><code>camelcase</code></strong></p>
 
-<p>:    Converts all keys to a camel-case equivalent. This is merely a convenience for conforming to language convention for consumers of this content, namely JavaScript. Default is <code>False</code>.</p>
+<p>Converts all keys to a camel-case equivalent. This is merely a convenience for conforming to language convention for consumers of this content, namely JavaScript. Default is <code>False</code>.</p>
 
 <p><strong><code>allow_missing</code></strong></p>
 
-<p>:   Allow for missing fields (rather than throwing an error) and fill in the value with <code>None</code>.</p>
+<p>Allow for missing fields (rather than throwing an error) and fill in the value with <code>None</code>.</p>
 
-<h3>Examples</h3>
+<h3>
+<a name="hooks" class="anchor" href="#hooks"><span class="octicon octicon-link"></span></a>Hooks</h3>
+
+<p>Hooks enable altering the objects that are serialized at each level.</p>
+
+<p><strong><code>prehook</code></strong></p>
+
+<p>A function that takes and returns an object. For <code>QuerySet</code>s it can be used for filtering or annotating additional data to each model instance. For <code>Model</code> instances it can be prefetching additional data, swapping out an instance or whatever is necessary prior to serialization.</p>
+
+<p>Since filtering <code>QuerySet</code>s is a common use case, a simple dict can be supplied instead of a function that will be passed to the <code>filter</code> method.</p>
+
+<p>Here are two examples for filtering <code>posts</code> by the requesting user.</p>
+
+<p>The shorthand method of using a <code>dict</code>:</p>
+
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">'related'</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">'posts'</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">'prehook'</span><span class="p">:</span> <span class="p">{</span><span class="s">'user'</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">},</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="o">...</span>
+</pre></div>
+
+<p>For applying conditional logic, a function can be used:</p>
+
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+
+<span class="k">def</span> <span class="nf">filter_by_user</span><span class="p">(</span><span class="n">queryset</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">:</span>
+        <span class="n">queryset</span> <span class="o">=</span> <span class="n">queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">queryset</span>
+
+<span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">'related'</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">'posts'</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">'prehook'</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">filter_by_user</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="o">...</span>
+</pre></div>
+
+<p><strong><code>posthook</code></strong></p>
+
+<p>A function that takes the original model instance and the serialized attrs for post-processing. This is specifically useful for augmenting or modifying the data prior to being added to the large serialized data structure.</p>
+
+<p>Even if the related object (like <code>posts</code> above) is a <code>QuerySet</code>, this hook is applied per object in the <code>QuerySet</code>. This is because it would rarely ever be necessary to process a list of objects as a whole since filtering can already be performed above (using the <code>prehook</code>) prior to serialization.</p>
+
+<p>Here is an example of adding resource links to the output data based on the serialized attributes:</p>
+
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">django.core.urlresolvers</span> <span class="kn">import</span> <span class="n">reverse</span>
+
+<span class="k">def</span> <span class="nf">add_resource_links</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">attrs</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+    <span class="n">uri</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">build_absolute_uri</span>
+    <span class="n">attrs</span><span class="p">[</span><span class="s">'_links'</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">'self'</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s">'href'</span><span class="p">:</span> <span class="n">uri</span><span class="p">(</span><span class="n">reverse</span><span class="p">(</span><span class="s">'api:foo:bar'</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s">'pk'</span><span class="p">:</span> <span class="n">attrs</span><span class="o">.</span><span class="n">id</span><span class="p">})),</span>
+        <span class="p">},</span>
+        <span class="o">...</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">attrs</span>
+
+<span class="n">template</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'posthook'</span><span class="p">:</span> <span class="n">partial</span><span class="p">(</span><span class="n">add_resource_links</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">),</span>
+    <span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+
+<h3>
+<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h3>
 
 <div class="highlight"><pre><span class="c"># The field names listed are after the mapping occurs</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">serialize</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">'username'</span><span class="p">,</span> <span class="s">'full_name'</span><span class="p">],</span> <span class="n">key_map</span><span class="o">=</span><span class="p">{</span><span class="s">'full_name'</span><span class="p">:</span> <span class="s">'get_full_name'</span><span class="p">},</span> <span class="n">camelcase</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">serialize</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">'username'</span><span class="p">,</span> <span class="s">'full_name'</span><span class="p">],</span> <span class="n">aliases</span><span class="o">=</span><span class="p">{</span><span class="s">'full_name'</span><span class="p">:</span> <span class="s">'get_full_name'</span><span class="p">},</span> <span class="n">camelcase</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="s">'fullName'</span><span class="p">:</span> <span class="s">u'Jon Doe'</span><span class="p">,</span>
     <span class="s">'username'</span><span class="p">:</span> <span class="s">u'jdoe'</span>
@@ -136,7 +216,8 @@ following arguments can be passed to <code>serialize</code>:</p>
 <span class="p">}</span>
 </pre></div>
 
-<h2>Related Objects</h2>
+<h2>
+<a name="related-objects" class="anchor" href="#related-objects"><span class="octicon octicon-link"></span></a>Related Objects</h2>
 
 <p>Composite resources are common when dealing with data that have <em>tight</em> relationships. A user and their user profile is an example of this. It is inefficient for a client to have to make two separate requests for data that is typically always consumed together.</p>
 
@@ -144,7 +225,7 @@ following arguments can be passed to <code>serialize</code>:</p>
 
 <p><strong><code>merge</code></strong></p>
 
-<p>:    This option only applies to local <code>ForeignKey</code> or <code>OneToOneField</code>. This allows for merging the related object's fields into the parent object.</p>
+<p>This option only applies to local <code>ForeignKey</code> or <code>OneToOneField</code>. This allows for merging the related object's fields into the parent object.</p>
 
 <div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">serialize</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">related</span><span class="o">=</span><span class="p">{</span><span class="s">'groups'</span><span class="p">:</span> <span class="p">{</span><span class="s">'fields'</span><span class="p">:</span> <span class="p">[</span><span class="s">'name'</span><span class="p">]},</span> <span class="s">'profile'</span><span class="p">:</span> <span class="p">{</span><span class="s">'merge'</span><span class="p">:</span> <span class="bp">True</span><span class="p">}})</span>
 <span class="p">{</span>
@@ -159,7 +240,8 @@ following arguments can be passed to <code>serialize</code>:</p>
 <span class="p">}</span>
 </pre></div>
 
-<h2>Conventions</h2>
+<h2>
+<a name="conventions" class="anchor" href="#conventions"><span class="octicon octicon-link"></span></a>Conventions</h2>
 
 <p><strong>Define a template dict for each model that will be serialized.</strong></p>
 
@@ -199,9 +281,11 @@ following arguments can be passed to <code>serialize</code>:</p>
 <span class="n">serialize</span><span class="p">(</span><span class="n">users</span><span class="p">,</span> <span class="o">**</span><span class="n">user_template</span><span class="p">)</span>
 </pre></div>
 
-<h2>FAQ</h2>
+<h2>
+<a name="faq" class="anchor" href="#faq"><span class="octicon octicon-link"></span></a>FAQ</h2>
 
-<h3>Does the serializer only understand model fields?</h3>
+<h3>
+<a name="does-the-serializer-only-understand-model-fields" class="anchor" href="#does-the-serializer-only-understand-model-fields"><span class="octicon octicon-link"></span></a>Does the serializer only understand model fields?</h3>
 
 <p>No. In fact it is smart about accessing the <em>field</em>. The following steps are taken when attempting to get the value:</p>
 
@@ -210,30 +294,32 @@ following arguments can be passed to <code>serialize</code>:</p>
 <li>If the object support <code>__getitem__</code>, check if the key is present</li>
 </ol><p>Assuming one of those two methods succeed, it will check if the value is callable and will call it (useful for methods). If the value is a <code>RelatedManager</code>, it will resolve the <code>QuerySet</code> and recursive downstream.</p>
 
-<h3>Does the serializer only support model instances?</h3>
+<h3>
+<a name="does-the-serializer-only-support-model-instances" class="anchor" href="#does-the-serializer-only-support-model-instances"><span class="octicon octicon-link"></span></a>Does the serializer only support model instances?</h3>
 
 <p>No. It is not always the case that a single model instance or queryset is the source of data for a resource. <code>serialize</code> also understands <code>dict</code>s and any iterable of <code>dict</code>s. They will be treated similarly to the model instances.</p>
 
-<h3>My model has a ton of fields and I don't want to type them all out. What do I do?</h3>
+<h3>
+<a name="my-model-has-a-ton-of-fields-and-i-dont-want-to-type-them-all-out-what-do-i-do" class="anchor" href="#my-model-has-a-ton-of-fields-and-i-dont-want-to-type-them-all-out-what-do-i-do"><span class="octicon octicon-link"></span></a>My model has a ton of fields and I don't want to type them all out. What do I do?</h3>
 
 <p>The <code>fields</code> and <code>exclude</code> options understands four <em>pseudo-selectors</em> which can be used in place of typing out all of a model's field names (although being explicit is typically better).</p>
 
 <p><strong><code>:pk</code></strong></p>
 
-<p>:    The primary key field of the model</p>
+<p>The primary key field of the model</p>
 
 <p><strong><code>:local</code></strong></p>
 
-<p>:    All local fields on a model (including local foreign keys and
+<p>All local fields on a model (including local foreign keys and
 many-to-many fields)</p>
 
 <p><strong><code>:related</code></strong></p>
 
-<p>:    All related fields (reverse foreign key and many-to-many)</p>
+<p>All related fields (reverse foreign key and many-to-many)</p>
 
 <p><strong><code>:all</code></strong></p>
 
-<p>:    A composite of all selectors above and thus any an all fields on or related to a model</p>
+<p>A composite of all selectors above and thus any an all fields on or related to a model</p>
 
 <p>You can use them like this:</p>
 
@@ -241,6 +327,46 @@ many-to-many fields)</p>
 <span class="c"># for the example.</span>
 <span class="n">serialize</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">':pk'</span><span class="p">,</span> <span class="s">':local'</span><span class="p">,</span> <span class="s">'foo'</span><span class="p">],</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s">'password'</span><span class="p">])</span>
 </pre></div>
+
+<h2>
+<a name="changelog" class="anchor" href="#changelog"><span class="octicon octicon-link"></span></a>CHANGELOG</h2>
+
+<p>2013-05-01</p>
+
+<ul>
+<li>Update <code>posthook</code> to take the original instance as the first argument and the serialized data as the second argument</li>
+<li>Ensure the passed object is returned from <code>serialize</code> even if it does not qualify to be processed</li>
+</ul><p>2013-04-29</p>
+
+<ul>
+<li>Fix bug where the <code>flat</code> option was not respecting <code>merge</code>
+
+<ul>
+<li>If <code>merge</code> is set, it takes precedence over flat</li>
+</ul>
+</li>
+</ul><p>2013-04-28</p>
+
+<ul>
+<li>Add <code>prehook</code> and <code>posthook</code> options</li>
+<li>Add support for <code>flat</code> option for model instances with a single field</li>
+<li>Rename <code>key_map</code> to <code>aliases</code> for clarity</li>
+<li>Rename <code>key_prefix</code> to <code>prefix</code>
+
+<ul>
+<li>It is implied the prefix applies to the keys since this a serialization
+utility</li>
+</ul>
+</li>
+<li>Internal clean up</li>
+<li>Correct documentation regarding the <code>flat</code> option
+
+<ul>
+<li>It was incorrectly named <code>flatten</code>
+</li>
+</ul>
+</li>
+</ul>
         </section>
 
         <aside id="sidebar">
@@ -255,7 +381,7 @@ many-to-many fields)</p>
 
           <p class="repo-owner"><a href="https://github.com/bruth/django-preserialize"></a> is maintained by <a href="https://github.com/bruth">bruth</a>.</p>
 
-          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.</p>
+          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
         </aside>
       </div>
     </div>
