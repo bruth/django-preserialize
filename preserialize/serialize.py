@@ -124,6 +124,7 @@ def queryset_to_list(queryset, **options):
                 return []
         else:
             queryset = queryset.filter(**options['prehook'])
+        options['prehook'] = False
 
     # If the `select_related` option is defined, update the `QuerySet`
     if 'select_related' in options:
