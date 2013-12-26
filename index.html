@@ -31,14 +31,14 @@
           <h1>
 <a name="django-preserialize" class="anchor" href="#django-preserialize"><span class="octicon octicon-link"></span></a>django-preserialize</h1>
 
-<p><a href="https://travis-ci.org/bruth/django-preserialize"><img src="https://travis-ci.org/bruth/django-preserialize.png" alt="Build Status"></a> <a href="https://coveralls.io/r/bruth/django-preserialize?branch=master"><img src="https://coveralls.io/repos/bruth/django-preserialize/badge.png?branch=master" alt="Coverage Status"></a></p>
+<p><a href="https://travis-ci.org/bruth/django-preserialize"><img src="https://travis-ci.org/bruth/django-preserialize.png" alt="Build Status"></a> <a href="https://coveralls.io/r/bruth/django-preserialize?branch=master"><img src="https://coveralls.io/repos/bruth/django-preserialize/badge.png?branch=master" alt="Coverage Status"></a> <a href="https://bitdeli.com/free" title="Bitdeli Badge"><img src="https://d2weczhvl823v0.cloudfront.net/bruth/django-preserialize/trend.png" alt="Bitdeli Badge"></a></p>
 
 <p>django-preserialize is a one-stop shop for ensuring an object is free of <code>Model</code> and <code>QuerySet</code> instances. By default, all non-relational fields will be included as well as the primary keys of local related fields. The resulting containers will simply be <code>dict</code>s and <code>list</code>s.</p>
 
 <h2>
 <a name="install" class="anchor" href="#install"><span class="octicon octicon-link"></span></a>Install</h2>
 
-<div class="highlight"><pre>pip install django-preserialize
+<div class="highlight highlight-bash"><pre>pip install django-preserialize
 </pre></div>
 
 <h2>
@@ -46,7 +46,7 @@
 
 <p>A serialized user object might look like this:</p>
 
-<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">preserialize.serialize</span> <span class="kn">import</span> <span class="n">serialize</span>
+<div class="highlight highlight-python"><pre><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">preserialize.serialize</span> <span class="kn">import</span> <span class="n">serialize</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">serialize</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="s">'date_joined'</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2009</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span>
@@ -126,7 +126,7 @@ following arguments can be passed to <code>serialize</code>:</p>
 
 <p>The shorthand method of using a <code>dict</code>:</p>
 
-<div class="highlight"><pre><span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+<div class="highlight highlight-python"><pre><span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
     <span class="n">template</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s">'related'</span><span class="p">:</span> <span class="p">{</span>
             <span class="s">'posts'</span><span class="p">:</span> <span class="p">{</span>
@@ -139,11 +139,11 @@ following arguments can be passed to <code>serialize</code>:</p>
 
 <p>For applying conditional logic, a function can be used:</p>
 
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<div class="highlight highlight-python"><pre><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 
-<span class="k">def</span> <span class="nf">filter_by_user</span><span class="p">(</span><span class="n">queryset</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">:</span>
-        <span class="n">queryset</span> <span class="o">=</span> <span class="n">queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">filter_by_user</span><span class="p">(</span><span class="n">queryset</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_superuser</span><span class="p">:</span>
+        <span class="n">queryset</span> <span class="o">=</span> <span class="n">queryset</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">queryset</span>
 
 <span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
@@ -165,7 +165,7 @@ following arguments can be passed to <code>serialize</code>:</p>
 
 <p>Here is an example of adding resource links to the output data based on the serialized attributes:</p>
 
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<div class="highlight highlight-python"><pre><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">from</span> <span class="nn">django.core.urlresolvers</span> <span class="kn">import</span> <span class="n">reverse</span>
 
 <span class="k">def</span> <span class="nf">add_resource_links</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">attrs</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
@@ -187,7 +187,7 @@ following arguments can be passed to <code>serialize</code>:</p>
 <h3>
 <a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h3>
 
-<div class="highlight"><pre><span class="c"># The field names listed are after the mapping occurs</span>
+<div class="highlight highlight-python"><pre><span class="c"># The field names listed are after the mapping occurs</span>
 <span class="o">&gt;&gt;&gt;</span> <span class="n">serialize</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">'username'</span><span class="p">,</span> <span class="s">'full_name'</span><span class="p">],</span> <span class="n">aliases</span><span class="o">=</span><span class="p">{</span><span class="s">'full_name'</span><span class="p">:</span> <span class="s">'get_full_name'</span><span class="p">},</span> <span class="n">camelcase</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="s">'fullName'</span><span class="p">:</span> <span class="s">u'Jon Doe'</span><span class="p">,</span>
@@ -227,7 +227,7 @@ following arguments can be passed to <code>serialize</code>:</p>
 
 <p>This option only applies to local <code>ForeignKey</code> or <code>OneToOneField</code>. This allows for merging the related object's fields into the parent object.</p>
 
-<div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">serialize</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">related</span><span class="o">=</span><span class="p">{</span><span class="s">'groups'</span><span class="p">:</span> <span class="p">{</span><span class="s">'fields'</span><span class="p">:</span> <span class="p">[</span><span class="s">'name'</span><span class="p">]},</span> <span class="s">'profile'</span><span class="p">:</span> <span class="p">{</span><span class="s">'merge'</span><span class="p">:</span> <span class="bp">True</span><span class="p">}})</span>
+<div class="highlight highlight-python"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">serialize</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">related</span><span class="o">=</span><span class="p">{</span><span class="s">'groups'</span><span class="p">:</span> <span class="p">{</span><span class="s">'fields'</span><span class="p">:</span> <span class="p">[</span><span class="s">'name'</span><span class="p">]},</span> <span class="s">'profile'</span><span class="p">:</span> <span class="p">{</span><span class="s">'merge'</span><span class="p">:</span> <span class="bp">True</span><span class="p">}})</span>
 <span class="p">{</span>
     <span class="s">'username'</span><span class="p">:</span> <span class="s">u'jdoe'</span><span class="p">,</span>
     <span class="s">'groups'</span><span class="p">:</span> <span class="p">[{</span>
@@ -247,7 +247,7 @@ following arguments can be passed to <code>serialize</code>:</p>
 
 <p>Defining a <em>template</em> enables reuse across different serialized objects as well as increases readability and maintainability. Deconstructing the above example, we have:</p>
 
-<div class="highlight"><pre><span class="c"># Render a list of group names.. note that 'values_list'</span>
+<div class="highlight highlight-python"><pre><span class="c"># Render a list of group names.. note that 'values_list'</span>
 <span class="c"># options is implied here since there is only one field</span>
 <span class="c"># specified. It is here to be explicit.</span>
 <span class="n">group_template</span> <span class="o">=</span> <span class="p">{</span>
@@ -323,7 +323,7 @@ many-to-many fields)</p>
 
 <p>You can use them like this:</p>
 
-<div class="highlight"><pre><span class="c"># The two selectors here are actually the default, but defined</span>
+<div class="highlight highlight-python"><pre><span class="c"># The two selectors here are actually the default, but defined</span>
 <span class="c"># for the example.</span>
 <span class="n">serialize</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s">':pk'</span><span class="p">,</span> <span class="s">':local'</span><span class="p">,</span> <span class="s">'foo'</span><span class="p">],</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s">'password'</span><span class="p">])</span>
 </pre></div>
@@ -381,7 +381,7 @@ utility</li>
 
           <p class="repo-owner"><a href="https://github.com/bruth/django-preserialize"></a> is maintained by <a href="https://github.com/bruth">bruth</a>.</p>
 
-          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
         </aside>
       </div>
     </div>
