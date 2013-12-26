@@ -112,9 +112,9 @@ For applying conditional logic, a function can be used:
 ```python
 from functools import partial
 
-def filter_by_user(queryset, user):
-    if not user.is_superuser:
-        queryset = queryset.filter(user=user)
+def filter_by_user(queryset, request):
+    if not request.user.is_superuser:
+        queryset = queryset.filter(user=request.user)
     return queryset
 
 def view(request):
