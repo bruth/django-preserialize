@@ -1,6 +1,7 @@
 PSEUDO_SELECTORS = (':all', ':pk', ':local', ':related')
 DEFAULT_SELECTORS = (':pk', ':local')
 
+
 def convert_to_camel(s):
     if '_' not in s:
         return s
@@ -44,7 +45,7 @@ class ModelFieldResolver(object):
         }
 
     def _get_fields(self, model):
-        if not self.cache.has_key(model):
+        if model not in self.cache:
             fields = {}
 
             fields.update(self._get_pk_field(model))
@@ -73,6 +74,7 @@ class ModelFieldResolver(object):
 
 resolver = ModelFieldResolver()
 
+
 def parse_selectors(model, fields=None, exclude=None, key_map=None, **options):
     """Validates fields are valid and maps pseudo-fields to actual fields
     for a given model class.
@@ -92,7 +94,7 @@ def parse_selectors(model, fields=None, exclude=None, key_map=None, **options):
 
         if cleaned is None:
             raise AttributeError('The "{0}" attribute could not be found '
-                'on the model "{1}"'.format(actual, model))
+                                 'on the model "{1}"'.format(actual, model))
 
         # Mapped value, so use the original name listed in `fields`
         if type(cleaned) is list:
@@ -121,7 +123,7 @@ def get_field_value(obj, name, allow_missing=False):
 
     # Handle a local many-to-many or a reverse foreign key
     elif value.__class__.__name__ in ('RelatedManager', 'ManyRelatedManager',
-            'GenericRelatedObjectManager'):
+                                      'GenericRelatedObjectManager'):
         value = value.all()
 
     return value

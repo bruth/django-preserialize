@@ -19,15 +19,16 @@ DEFAULT_OPTIONS = {
     'posthook': False,
 }
 
+
 def _defaults(options):
     if 'key_map' in options and 'aliases' not in options:
         warnings.warn('The "key_map" option has been renamed to "aliases"',
-            DeprecationWarning)
+                      DeprecationWarning)
         options['aliases'] = options.pop('key_map')
 
     if 'key_prefix' in options and 'prefix' not in options:
         warnings.warn('The "key_prefix" option has been renamed to "prefix"',
-            DeprecationWarning)
+                      DeprecationWarning)
         options['prefix'] = options.pop('key_prefix')
 
     defaults = DEFAULT_OPTIONS.copy()
@@ -77,7 +78,7 @@ def model_to_dict(instance, **options):
         # method name. `value` may be a number of things, so the various types
         # are checked below.
         value = get_field_value(instance, accessor,
-            allow_missing=options['allow_missing'])
+                                allow_missing=options['allow_missing'])
 
         # Related objects, perform some checks on their options
         if isinstance(value, (models.Model, QuerySet)):
@@ -89,7 +90,8 @@ def model_to_dict(instance, **options):
                 _options['prefix'] = _options['prefix'] % {'accessor': alias}
 
             if isinstance(value, models.Model):
-                if len(_options['fields']) == 1 and _options['flat'] and not _options['merge']:
+                if len(_options['fields']) == 1 and _options['flat'] \
+                        and not _options['merge']:
                     value = serialize(value, **_options).values()[0]
                 else:
                     # Recurse, get the dict representation
@@ -141,7 +143,7 @@ def queryset_to_list(queryset, **options):
         return list(queryset)
 
     return map(lambda x: model_to_dict(x, **options),
-            queryset.iterator())
+               queryset.iterator())
 
 
 def serialize(obj, fields=None, exclude=None, **options):
