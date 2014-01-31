@@ -1,4 +1,5 @@
 import warnings
+import collections
 from django.db import models
 from django.conf import settings
 from django.db.models.query import QuerySet
@@ -55,7 +56,7 @@ def model_to_dict(instance, **options):
     attrs = {}
 
     if options['prehook']:
-        if callable(options['prehook']):
+        if isinstance(options['prehook'], collections.Callable):
             instance = options['prehook'](instance)
             if instance is None:
                 return attrs
@@ -92,7 +93,7 @@ def model_to_dict(instance, **options):
             if isinstance(value, models.Model):
                 if len(_options['fields']) == 1 and _options['flat'] \
                         and not _options['merge']:
-                    value = serialize(value, **_options).values()[0]
+                    value = list(serialize(value, **_options).values())[0]
                 else:
                     # Recurse, get the dict representation
                     _attrs = serialize(value, **_options)
@@ -120,7 +121,7 @@ def queryset_to_list(queryset, **options):
     options = _defaults(options)
 
     if options['prehook']:
-        if callable(options['prehook']):
+        if isinstance(options['prehook'], collections.Callable):
             queryset = options['prehook'](queryset)
             if queryset is None:
                 return []
@@ -142,8 +143,7 @@ def queryset_to_list(queryset, **options):
             queryset = queryset.values_list(*fields)
         return list(queryset)
 
-    return map(lambda x: model_to_dict(x, **options),
-               queryset.iterator())
+    return [model_to_dict(x, **options) for x in queryset.iterator()]
 
 
 def serialize(obj, fields=None, exclude=None, **options):
@@ -166,12 +166,12 @@ def serialize(obj, fields=None, exclude=None, **options):
     if isinstance(obj, dict):
         exclude = exclude or []
         if not fields:
-            fields = obj.iterkeys()
+            fields = iter(obj.keys())
         fields = [x for x in fields if x not in exclude]
         return model_to_dict(obj, fields=fields, **options)
 
     # Handle other iterables
     if hasattr(obj, '__iter__'):
-        return map(lambda x: serialize(x, fields, exclude, **options), obj)
+        return [serialize(x, fields, exclude, **options) for x in obj]
 
     return obj

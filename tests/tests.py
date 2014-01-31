@@ -40,99 +40,99 @@ class ModelSerializer(unittest.TestCase):
     def test_default(self):
         obj = serialize(self.hackers)
         self.assertEqual(obj, [{
-            'website': u'http://ejohn.org',
+            'website': 'http://ejohn.org',
             'user': {
-                'username': u'ejohn',
-                'first_name': u'John',
-                'last_name': u'Resig',
+                'username': 'ejohn',
+                'first_name': 'John',
+                'last_name': 'Resig',
                 'is_active': True,
-                'email': u'',
+                'email': '',
                 'is_superuser': True,
                 'is_staff': True,
                 'last_login': datetime.datetime(2010, 3, 3, 17, 40, 41),
-                'password': u'!',
+                'password': '!',
                 'id': 1,
                 'date_joined': datetime.datetime(2009, 5, 16, 15, 52, 40),
                 'user_permissions': [],
                 'groups': [],
             },
             'libraries': [{
-                'url': u'https://github.com/jquery/jquery',
-                'name': u'jQuery',
+                'url': 'https://github.com/jquery/jquery',
+                'name': 'jQuery',
                 'id': 1,
-                'language': u'javascript',
+                'language': 'javascript',
                 'tags': [{
                     'id': 1,
-                    'name': u'javascript'
+                    'name': 'javascript'
                 }, {
                     'id': 2,
-                    'name': u'dom'
+                    'name': 'dom'
                 }]
             }]
         }, {
-            'website': u'https://github.com/jashkenas',
+            'website': 'https://github.com/jashkenas',
             'user': {
-                'username': u'jashkenas',
-                'first_name': u'Jeremy',
-                'last_name': u'Ashkenas',
+                'username': 'jashkenas',
+                'first_name': 'Jeremy',
+                'last_name': 'Ashkenas',
                 'is_active': True,
-                'email': u'',
+                'email': '',
                 'is_superuser': False,
                 'is_staff': True,
                 'last_login': datetime.datetime(2010, 3, 3, 17, 40, 41),
-                'password': u'!',
+                'password': '!',
                 'id': 2,
                 'date_joined': datetime.datetime(2009, 5, 16, 15, 52, 40),
                 'user_permissions': [],
                 'groups': [],
             },
             'libraries': [{
-                'url': u'https://github.com/documentcloud/backbone',
-                'name': u'Backbone',
+                'url': 'https://github.com/documentcloud/backbone',
+                'name': 'Backbone',
                 'id': 2,
-                'language': u'javascript',
+                'language': 'javascript',
                 'tags': [{
                     'id': 1,
-                    'name': u'javascript'
+                    'name': 'javascript'
                 }]
             }, {
-                'url': u'https://github.com/jashkenas/coffee-script',
-                'name': u'CoffeeScript',
+                'url': 'https://github.com/jashkenas/coffee-script',
+                'name': 'CoffeeScript',
                 'id': 3,
-                'language': u'coffeescript',
+                'language': 'coffeescript',
                 'tags': [{
                     'id': 1,
-                    'name': u'javascript'
+                    'name': 'javascript'
                 }]
             }]
         }, {
-            'website': u'http://holovaty.com',
+            'website': 'http://holovaty.com',
             'user': {
-                'username': u'holovaty',
-                'first_name': u'Adrian',
-                'last_name': u'Holovaty',
+                'username': 'holovaty',
+                'first_name': 'Adrian',
+                'last_name': 'Holovaty',
                 'is_active': False,
-                'email': u'',
+                'email': '',
                 'is_superuser': True,
                 'is_staff': True,
                 'last_login': datetime.datetime(2010, 3, 3, 17, 40, 41),
-                'password': u'!',
+                'password': '!',
                 'id': 3,
                 'date_joined': datetime.datetime(2009, 5, 16, 15, 52, 40),
                 'user_permissions': [],
                 'groups': [],
             },
             'libraries': [{
-                'url': u'https://github.com/django/django',
-                'name': u'Django',
+                'url': 'https://github.com/django/django',
+                'name': 'Django',
                 'id': 4,
-                'language': u'python',
+                'language': 'python',
                 'tags': [{
                     'id': 3,
-                    'name': u'python'
+                    'name': 'python'
                 }, {
                     'id': 4,
-                    'name': u'django'
+                    'name': 'django'
                 }]
             }]
         }])
@@ -140,9 +140,9 @@ class ModelSerializer(unittest.TestCase):
     def test_fields(self):
         obj = serialize(self.hackers, fields=['website'], values_list=True)
         self.assertEqual(obj, [
-            u'http://ejohn.org',
-            u'https://github.com/jashkenas',
-            u'http://holovaty.com',
+            'http://ejohn.org',
+            'https://github.com/jashkenas',
+            'http://holovaty.com',
         ])
 
     def test_related(self):
@@ -163,43 +163,43 @@ class ModelSerializer(unittest.TestCase):
         obj = serialize(self.hackers, **template)
         self.assertEqual(obj, [{
             'user_is_superuser': True,
-            'website': u'http://ejohn.org',
+            'website': 'http://ejohn.org',
             'user_id': 1,
             'user_is_active': True,
             'user_is_staff': True,
-            'user_first_name': u'John',
-            'user_last_name': u'Resig',
-            'user_username': u'ejohn',
-            'libraries': [u'jQuery'],
+            'user_first_name': 'John',
+            'user_last_name': 'Resig',
+            'user_username': 'ejohn',
+            'libraries': ['jQuery'],
             'user_date_joined': datetime.datetime(2009, 5, 16, 15, 52, 40),
             'user_last_login': datetime.datetime(2010, 3, 3, 17, 40, 41),
-            'user_email': u''
+            'user_email': ''
         }, {
             'user_is_superuser': False,
-            'website': u'https://github.com/jashkenas',
+            'website': 'https://github.com/jashkenas',
             'user_id': 2,
             'user_is_active': True,
             'user_is_staff': True,
-            'user_first_name': u'Jeremy',
-            'user_last_name': u'Ashkenas',
-            'user_username': u'jashkenas',
-            'libraries': [u'Backbone', u'CoffeeScript'],
+            'user_first_name': 'Jeremy',
+            'user_last_name': 'Ashkenas',
+            'user_username': 'jashkenas',
+            'libraries': ['Backbone', 'CoffeeScript'],
             'user_date_joined': datetime.datetime(2009, 5, 16, 15, 52, 40),
             'user_last_login': datetime.datetime(2010, 3, 3, 17, 40, 41),
-            'user_email': u''
+            'user_email': ''
         }, {
             'user_is_superuser': True,
-            'website': u'http://holovaty.com',
+            'website': 'http://holovaty.com',
             'user_id': 3,
             'user_is_active': False,
             'user_is_staff': True,
-            'user_first_name': u'Adrian',
-            'user_last_name': u'Holovaty',
-            'user_username': u'holovaty',
-            'libraries': [u'Django'],
+            'user_first_name': 'Adrian',
+            'user_last_name': 'Holovaty',
+            'user_username': 'holovaty',
+            'libraries': ['Django'],
             'user_date_joined': datetime.datetime(2009, 5, 16, 15, 52, 40),
             'user_last_login': datetime.datetime(2010, 3, 3, 17, 40, 41),
-            'user_email': u''
+            'user_email': ''
         }])
 
     def test_shorthand(self):
@@ -213,49 +213,49 @@ class ModelSerializer(unittest.TestCase):
         }
         obj = serialize(self.tags, **data_template)
         self.assertEqual(obj, [{
-            'name': u'javascript',
+            'name': 'javascript',
             'libraries': [{
-                'url': u'https://github.com/jquery/jquery',
-                'name': u'jQuery',
+                'url': 'https://github.com/jquery/jquery',
+                'name': 'jQuery',
                 'id': 1,
-                'language': u'javascript',
+                'language': 'javascript',
             }, {
-                'url': u'https://github.com/documentcloud/backbone',
-                'name': u'Backbone',
+                'url': 'https://github.com/documentcloud/backbone',
+                'name': 'Backbone',
                 'id': 2,
-                'language': u'javascript',
+                'language': 'javascript',
             }, {
-                'url': u'https://github.com/jashkenas/coffee-script',
-                'name': u'CoffeeScript',
+                'url': 'https://github.com/jashkenas/coffee-script',
+                'name': 'CoffeeScript',
                 'id': 3,
-                'language': u'coffeescript',
+                'language': 'coffeescript',
             }],
             'id': 1
         }, {
-            'name': u'dom',
+            'name': 'dom',
             'libraries': [{
-                'url': u'https://github.com/jquery/jquery',
-                'name': u'jQuery',
+                'url': 'https://github.com/jquery/jquery',
+                'name': 'jQuery',
                 'id': 1,
-                'language': u'javascript',
+                'language': 'javascript',
             }],
             'id': 2
         }, {
-            'name': u'python',
+            'name': 'python',
             'libraries': [{
-                'url': u'https://github.com/django/django',
-                'name': u'Django',
+                'url': 'https://github.com/django/django',
+                'name': 'Django',
                 'id': 4,
-                'language': u'python',
+                'language': 'python',
             }],
             'id': 3,
         }, {
-            'name': u'django',
+            'name': 'django',
             'libraries': [{
-                'url': u'https://github.com/django/django',
-                'name': u'Django',
+                'url': 'https://github.com/django/django',
+                'name': 'Django',
                 'id': 4,
-                'language': u'python',
+                'language': 'python',
             }],
             'id': 4
         }])
@@ -274,7 +274,7 @@ class ModelSerializer(unittest.TestCase):
             fields=['user'], related={'user': {'fields': ['first_name']}})
 
         self.assertEqual(obj, [{
-            'user': u'John',
+            'user': 'John',
         }])
 
     def test_prehook(self):
@@ -289,7 +289,7 @@ class ModelSerializer(unittest.TestCase):
             related={'user': {'fields': ['first_name']}})
 
         self.assertEqual(obj, [{
-            'user': u'John',
+            'user': 'John',
         }])
 
     def test_posthook(self):
@@ -302,5 +302,5 @@ class ModelSerializer(unittest.TestCase):
 
         self.assertEqual(obj, {
             'foo': 1,
-            'user': u'John',
+            'user': 'John',
         })
