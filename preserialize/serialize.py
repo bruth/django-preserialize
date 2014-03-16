@@ -143,7 +143,7 @@ def queryset_to_list(queryset, **options):
             queryset = queryset.values_list(*fields)
         return list(queryset)
 
-    return [model_to_dict(x, **options) for x in queryset.iterator()]
+    return [model_to_dict(x, **options) for x in queryset]
 
 
 def serialize(obj, fields=None, exclude=None, **options):
