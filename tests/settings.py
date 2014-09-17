@@ -1,3 +1,9 @@
+MIDDLEWARE_CLASSES = (
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+)  
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',

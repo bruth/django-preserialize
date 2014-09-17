@@ -4,3 +4,7 @@ dist
 MANIFEST
 *.egg-info
 .coverage
+.tox
+build/
+test.db
+six*/

@@ -1,36 +1,95 @@
 import unittest
 import datetime
-from django.db import models
 from django.db.models.query import QuerySet
 from django.contrib.auth.models import User
 from preserialize import utils
 from preserialize.serialize import serialize
-
-
-# Some models..
-class Tag(models.Model):
-    name = models.CharField(max_length=20)
-
-
-class Library(models.Model):
-    name = models.CharField(max_length=30)
-    url = models.URLField()
-    language = models.CharField(max_length=20)
-    tags = models.ManyToManyField(Tag, related_name='libraries')
-
-
-class Hacker(models.Model):
-    user = models.OneToOneField(User, related_name='profile', primary_key=True)
-    website = models.URLField()
-    libraries = models.ManyToManyField(Library, related_name='hackers')
-
-    def signature(self):
-        return '{0}  <{1}>  {2}'.format(self.user.get_full_name(),
-                self.user.email, self.website)
+from .models import Tag, Library, Hacker
 
 
 class ModelSerializer(unittest.TestCase):
     def setUp(self):
+        # Create 3 User instances
+        u1 = User(id=1, username='ejohn', first_name='John', last_name='Resig',
+                  is_active=True, is_superuser=True, is_staff=True,
+                  last_login=datetime.datetime.strptime('2010-03-03 17:40:41', '%Y-%m-%d %H:%M:%S'),
+                  password='!', email='',
+                  date_joined=datetime.datetime.strptime('2009-05-16 15:52:40', '%Y-%m-%d %H:%M:%S'),
+        )
+        u1.save()
+
+        u2 = User(id=2, username='jashkenas', first_name='Jeremy', last_name='Ashkenas',
+                  is_active=True, is_superuser=False, is_staff=True,
+                  last_login=datetime.datetime.strptime('2010-03-03 17:40:41', '%Y-%m-%d %H:%M:%S'),
+                  password='!', email='',
+                  date_joined=datetime.datetime.strptime('2009-05-16 15:52:40', '%Y-%m-%d %H:%M:%S'),
+        )
+        u2.save()
+
+        u3 = User(id=3, username='holovaty', first_name='Adrian', last_name='Holovaty',
+                  is_active=False, is_superuser=True, is_staff=True,
+                  last_login=datetime.datetime.strptime('2010-03-03 17:40:41', '%Y-%m-%d %H:%M:%S'),
+                  password='!', email='',
+                  date_joined=datetime.datetime.strptime('2009-05-16 15:52:40', '%Y-%m-%d %H:%M:%S'),
+        )
+        u3.save()
+
+        # Create 4 Tag instances
+        tag1 = Tag(id=1, name='javascript')
+        tag1.save()
+
+        tag2 = Tag(id=2, name='dom')
+        tag2.save()
+
+        tag3 = Tag(id=3, name='python')
+        tag3.save()
+
+        tag4 = Tag(id=4, name='django')
+        tag4.save()
+
+        # Create 4 Library instances
+        lib1 = Library(id=1, name='jQuery',
+                       url='https://github.com/jquery/jquery',
+                       language='javascript'
+        )
+        lib1.save()
+        lib1.tags.add(tag1)
+        lib1.tags.add(tag2)
+
+        lib2 = Library(id=2, name='Backbone',
+                       url='https://github.com/documentcloud/backbone',
+                       language='javascript',
+        )
+        lib2.save()
+        lib2.tags.add(tag1)
+
+        lib3 = Library(id=3, name='CoffeeScript',
+                       url='https://github.com/jashkenas/coffee-script',
+                       language='coffeescript',
+        )
+        lib3.save()
+        lib3.tags.add(tag1)
+
+        lib4 = Library(id=4, name='Django',
+                       url='https://github.com/django/django',
+                       language='python',
+        )
+        lib4.save()
+        lib4.tags.add(tag3, tag4)
+
+        # Create 3 Hacker instances
+        hacker1 = Hacker(user=User.objects.get(id=1), website='http://ejohn.org')
+        hacker1.save()
+        hacker1.libraries.add(lib1)
+
+        hacker2 = Hacker(user=User.objects.get(id=2), website='https://github.com/jashkenas',)
+        hacker2.save()
+        hacker2.libraries.add(lib2, lib3)
+
+        hacker3 = Hacker(user=User.objects.get(id=3), website='http://holovaty.com')
+        hacker3.save()
+        hacker3.libraries.add(lib4)
+
         self.hackers = Hacker.objects.all()
         self.tags = Tag.objects.all()
 

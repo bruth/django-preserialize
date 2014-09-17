@@ -120,13 +120,13 @@ def get_field_value(obj, name, allow_missing=False):
     elif not allow_missing:
         raise ValueError('{} has no attribute {}'.format(obj, name))
 
-    # Check for callable
-    if isinstance(value, collections.Callable):
-        value = value()
-
     # Handle a local many-to-many or a reverse foreign key
-    elif value.__class__.__name__ in ('RelatedManager', 'ManyRelatedManager',
-                                      'GenericRelatedObjectManager'):
+    if value.__class__.__name__ in ('RelatedManager', 'ManyRelatedManager',
+                                    'GenericRelatedObjectManager'):
         value = value.all()
+
+    # Check for callable
+    elif isinstance(value, collections.Callable):
+        value = value()
 
     return value
