@@ -1,4 +1,7 @@
 import collections
+from django.db import models
+from django.db.models.fields import Field
+from django.db.models import FieldDoesNotExist
 
 
 PSEUDO_SELECTORS = (':all', ':pk', ':local', ':related')
@@ -115,8 +118,21 @@ def get_field_value(obj, name, allow_missing=False):
 
     if hasattr(obj, name):
         value = getattr(obj, name)
+
+        # Check if the name of is field on the model and get the prep
+        # value if it is a Field instance.
+        if isinstance(obj, models.Model):
+            try:
+                field = obj._meta.get_field(name)
+
+                if isinstance(field, Field):
+                    value = field.get_prep_value(value)
+            except FieldDoesNotExist:
+                pass
+
     elif hasattr(obj, '__getitem__') and name in obj:
         value = obj[name]
+
     elif not allow_missing:
         raise ValueError('{} has no attribute {}'.format(obj, name))
 
