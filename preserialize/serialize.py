@@ -21,6 +21,13 @@ DEFAULT_OPTIONS = {
 }
 
 
+def _merge(target, *sources):
+    for source in sources:
+        target.update(source)
+
+    return target
+
+
 def _defaults(options):
     if 'key_map' in options and 'aliases' not in options:
         warnings.warn('The "key_map" option has been renamed to "aliases"',
@@ -146,32 +153,40 @@ def queryset_to_list(queryset, **options):
     return [model_to_dict(x, **options) for x in queryset]
 
 
-def serialize(obj, fields=None, exclude=None, **options):
-    """Recursively attempts to find ``Model`` and ``QuerySet`` instances
-    to convert them into their representative datastructure per their
-    ``Resource`` (if one exists).
-    """
+class Serializer(object):
+    def __init__(self, **options):
+        self.options = options
 
-    # Handle model instances
-    if isinstance(obj, models.Model):
-        fields = parse_selectors(obj.__class__, fields, exclude, **options)
-        return model_to_dict(obj, fields=fields, **options)
+    def serialize(self, obj, fields=None, exclude=None, **options):
+        """Recursively attempts to find ``Model`` and ``QuerySet`` instances
+        to convert them into their representative datastructure per their
+        ``Resource`` (if one exists).
+        """
+        options = _merge({}, self.options, options)
 
-    # Handle querysets
-    if isinstance(obj, QuerySet):
-        fields = parse_selectors(obj.model, fields, exclude, **options)
-        return queryset_to_list(obj, fields=fields, **options)
+        # Handle model instances
+        if isinstance(obj, models.Model):
+            fields = parse_selectors(obj.__class__, fields, exclude, **options)
+            return model_to_dict(obj, fields=fields, **options)
 
-    # Handle dict instances
-    if isinstance(obj, dict):
-        exclude = exclude or []
-        if not fields:
-            fields = iter(obj.keys())
-        fields = [x for x in fields if x not in exclude]
-        return model_to_dict(obj, fields=fields, **options)
+        # Handle querysets
+        if isinstance(obj, QuerySet):
+            fields = parse_selectors(obj.model, fields, exclude, **options)
+            return queryset_to_list(obj, fields=fields, **options)
 
-    # Handle other iterables
-    if hasattr(obj, '__iter__'):
-        return [serialize(x, fields, exclude, **options) for x in obj]
+        # Handle dict instances
+        if isinstance(obj, dict):
+            exclude = exclude or []
+            if not fields:
+                fields = iter(obj.keys())
+            fields = [x for x in fields if x not in exclude]
+            return model_to_dict(obj, fields=fields, **options)
 
-    return obj
+        # Handle other iterables
+        if hasattr(obj, '__iter__'):
+            return [self.serialize(x, fields, exclude, **options) for x in obj]
+
+        return obj
+
+
+serialize = Serializer().serialize
