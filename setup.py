@@ -4,7 +4,7 @@ kwargs = {
     'packages': ['preserialize'],
     'include_package_data': True,
     'install_requires': [
-        'django',
+        'django>=1.4,<1.10',
     ],
     'test_suite': 'test_suite',
     'name': 'django-preserialize',
@@ -20,8 +20,9 @@ kwargs = {
         'License :: OSI Approved :: BSD License',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
     ],
 }
 
