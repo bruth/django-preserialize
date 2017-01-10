@@ -15,4 +15,5 @@ def get_version(short=False):
                               __version_info__['serial']))
     return ''.join(vers)
 
+
 __version__ = get_version()

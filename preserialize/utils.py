@@ -26,11 +26,23 @@ class ModelFieldResolver(object):
             ':pk': dict(list(zip(names, fields))),
         }
 
+    def _get_all_related_objects(self, model):
+        return [
+            f for f in model._meta.get_fields()
+            if (f.one_to_many or f.one_to_one)
+            and f.auto_created and not f.concrete
+        ]
+
+    def _get_all_related_many_to_many_objects(self, model):
+        return [
+            f for f in model._meta.get_fields(include_hidden=True)
+            if f.many_to_many and f.auto_created
+        ]
+
     def _get_local_fields(self, model):
         "Return the names of all locally defined fields on the model class."
-        local = model._meta.fields
-        m2m = model._meta.many_to_many
-
+        local = [f for f in model._meta.fields]
+        m2m = [f for f in model._meta.many_to_many]
         fields = local + m2m
         names = tuple([x.name for x in fields])
 
@@ -40,8 +52,8 @@ class ModelFieldResolver(object):
 
     def _get_related_fields(self, model):
         "Returns the names of all related fields for model class."
-        reverse_fk = model._meta.get_all_related_objects()
-        reverse_m2m = model._meta.get_all_related_many_to_many_objects()
+        reverse_fk = self._get_all_related_objects(model)
+        reverse_m2m = self._get_all_related_many_to_many_objects(model)
 
         fields = tuple(reverse_fk + reverse_m2m)
         names = tuple([x.get_accessor_name() for x in fields])
@@ -53,7 +65,6 @@ class ModelFieldResolver(object):
     def _get_fields(self, model):
         if model not in self.cache:
             fields = {}
-
             fields.update(self._get_pk_field(model))
             fields.update(self._get_local_fields(model))
             fields.update(self._get_related_fields(model))
@@ -77,6 +88,7 @@ class ModelFieldResolver(object):
 
         # Assume a field or property
         return attr
+
 
 resolver = ModelFieldResolver()
 
