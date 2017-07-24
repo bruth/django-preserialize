@@ -137,7 +137,8 @@ def get_field_value(obj, name, allow_missing=False):
             try:
                 field = obj._meta.get_field(name)
 
-                if isinstance(field, Field):
+                if isinstance(field, Field) and field.__class__.__name__ \
+                        not in ('JSONField',):
                     value = field.get_prep_value(value)
             except FieldDoesNotExist:
                 pass
